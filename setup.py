@@ -24,7 +24,7 @@ test_requirements = [
 
 setup(
     name='pytextgame',
-    version='0.0.1',
+    version='0.0.2',
     description="Cross-Platform Python Text Game Library",
     long_description=readme + '\n\n' + history,
     author="John Stilley",
