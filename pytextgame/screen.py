@@ -32,8 +32,11 @@ LUCIDA = 'Lucida Console'
 DEFAULT_TITLE = 'PyTextGame'
 
 
-# TODO: Is wrapper really necessary?
 def wrapper(method, num_rows, num_cols):
+    '''
+    This funtion exists to keep all references
+    to pygame in this module.
+    '''
     pygame.init()
     method(Screen(num_rows, num_cols))
 

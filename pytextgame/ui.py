@@ -14,7 +14,7 @@ class TextUI:
     def main(self):
         '''Start the PyGame screen'''
         screen.wrapper(lambda stdscr: self.set_up_and_run(stdscr),
-                          self._num_rows, self._num_cols)
+                       self._num_rows, self._num_cols)
 
     def set_up_and_run(self, stdscr):
         '''Set up and run the UI, though this class does not implement
