@@ -29,15 +29,10 @@ setup(
     long_description=readme + '\n\n' + history,
     author="John Stilley",
     url='https://github.com/thejollysin/pytextgame',
-    #packages=[
-    #    'pytextgame',
-    #],
     packages=find_packages(),
-    #package_data={'': ['*.png', '*.ttf']},
     package_data={
         'pytextgame': ['resources/rocket32.png', 'resources/FreeMono.ttf'],
     },
-    #package_dir={'pytextgame': 'pytextgame'},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
