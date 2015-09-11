@@ -1,4 +1,8 @@
+# Python Bytecode
 *.py[cod]
+
+# Text Editor Files
+*~
 
 # C extensions
 *.so

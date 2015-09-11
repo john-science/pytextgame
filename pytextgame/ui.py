@@ -2,7 +2,7 @@
 built on a PyGame-based curses emulator
 '''
 
-from pytextgame import cursesemu
+from pytextgame import screen
 
 
 class TextUI:
@@ -12,9 +12,8 @@ class TextUI:
         self._num_cols = num_cols
 
     def main(self):
-        '''Use cursesemu to start the PyGame display
-        '''
-        cursesemu.wrapper(lambda stdscr: self.set_up_and_run(stdscr),
+        '''Start the PyGame screen'''
+        screen.wrapper(lambda stdscr: self.set_up_and_run(stdscr),
                           self._num_rows, self._num_cols)
 
     def set_up_and_run(self, stdscr):
@@ -115,13 +114,13 @@ class TextGameUI(TextUI):
         '''
         acted = False
 
-        # TODO: This and the 'cursesemu.getch' need to be combined.
+        # TODO: This and the 'screen.getch' need to be combined.
         #       We want to allow for the GUI to change even when the user doesn't press a key.
         while not acted:
             key = self.get_key()
 
             # null key is for screen re-sizing, quiting the game, etc
-            if key == cursesemu.NULL_KEY:
+            if key == screen.NULL_KEY:
                 self._null_key = True
                 return
 
