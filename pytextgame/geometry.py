@@ -34,13 +34,8 @@ class Position:
         '''Create a direction vector from another position to this one'''
         return Direction(other.x - self.x, other.y - self.y)
 
-    def distance(self, other, half_x=False):
+    def distance(self, other):
         '''find the Euclidian distance between this vector and another'''
-        # TODO: Why would I want only half the X distance?
-        if half_x:
-            return math.sqrt(((self.x - other.x) / 2) ** 2 +
-                             (self.y - other.y) ** 2)
-
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
     def __repr__(self):
@@ -90,35 +85,6 @@ class Direction:
         '''decrease the length of this vector'''
         self.dx /= divisor
         self.dy /= divisor
-
-    # TODO: If we are too keep this, it could be a bit smarter (North by Northwest).
-    # TODO: Is this too game specific? Should it be moved out of PyTextGame?
-    def compass_name(self):
-        '''Return a cardinal direction string based on
-        the orientation of this vector
-        '''
-        x_name = None
-        y_name = None
-
-        if self.dx < 0:
-            x_name = 'west'
-
-        if self.dx > 0:
-            x_name = 'east'
-
-        if self.dy < 0:
-            y_name = 'north'
-
-        if self.dy > 0:
-            y_name = 'south'
-
-        if x_name is None:
-            return y_name
-
-        if y_name is None:
-            return x_name
-
-        return '%s-%s' % (y_name, x_name)
 
     def __str__(self):
         if self.name is None:
