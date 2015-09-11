@@ -4,8 +4,10 @@ import os
 import pygame
 import sys
 import time
+from pkg_resources import resource_stream, resource_string, resource_filename
 if sys.version_info[0] < 3: range = xrange
 
+# Color Constants (TODO: Move to Properties?)
 COLOR_BLACK   = 0
 COLOR_BLUE    = 1
 COLOR_GREEN   = 2
@@ -15,11 +17,19 @@ COLOR_MAGENTA = 5
 COLOR_YELLOW  = 6
 COLOR_WHITE   = 7
 A_BOLD = 8
+# Key Constants
 KEY_UP    = 257
 KEY_DOWN  = 258
 KEY_LEFT  = 259
 KEY_RIGHT = 260
 NULL_KEY = 'Null Key'
+# Resource Constants
+PYTEXTGAME_DIR = 'pytextgame'
+RESOURCE_DIR = 'resources'
+ICON = 'rocket32.png'
+FREE_MONO = 'FreeMono.ttf'
+LUCIDA = 'Lucida Console'
+DEFAULT_TITLE = 'PyTextGame'
 
 
 # TODO: Is wrapper really necessary?
@@ -35,30 +45,29 @@ def delay_output(ms):
 
 class StdScr:
 
-    DATADIR = 'data'
     COLORS = [(  0,  0,  0), ( 32, 32, 192), (  0, 156,  0), (  0, 156, 156),
               (156,  0,  0), (156,  0, 156), (156, 156,  0), (156, 156, 156),
               ( 96, 96, 96), ( 96, 96, 255), ( 64, 255, 64), ( 64, 255, 255),
               (255, 64, 64), (255, 64, 255), (255, 255, 64), (255, 255, 255)]
 
     def __init__(self, height, width):
-        pygame.key.set_repeat(250, 100)     # TODO: Should be configable?
+        pygame.key.set_repeat(250, 100)  # TODO: Should be configable?
         self._id = 0
         self._height = height
         self._width  = width
-        self._font_size = 16                # TODO: Should be configable?
-        self._font_name = 'Lucida Console'  # TODO: Should be more configurable?
-        self._bgcolor = (0, 0, 0)           # TODO: Should be configable?
+        self._font_size = 16             # TODO: Should be configable?
+        self._font_name = LUCIDA         # TODO: Should be more configurable?
+        self._bgcolor = (0, 0, 0)        # TODO: Should be configable?
         font = pygame.font.match_font(self._font_name)
+        self._font = pygame.font.SysFont(font, self._font_size)
 
         # TODO: Need to expose this, so it is not default.
-        # TODO: Also, this is a silly default icon
-        name = os.path.join(self.DATADIR, 'Icon.gif')
-        pygame.display.set_icon(pygame.image.load(name))
+        pygame.display.set_icon(pygame.image.load(resource_stream(__name__,
+                                                  os.path.join(RESOURCE_DIR, ICON))))
 
-        if font is None or font.lower().find('lucida') == -1:
+        if font is None or font.lower().find(LUCIDA.split()[0].lower()) == -1:
             # Use FreeMono is system doesn't have Lucida
-            self._font_name = os.path.join(self.DATADIR, 'FreeMono.ttf')
+            self._font_name = FREE_MONO
             self.reset_font()
             self._size_window_4_font()
             self._dy = -self._y_font_size / 3
@@ -70,7 +79,7 @@ class StdScr:
             self._dy = 0
 
         # TODO: Need to expose this, so it is not default.
-        pygame.display.set_caption('Isle of the Cursed Phoenix')
+        pygame.display.set_caption(DEFAULT_TITLE)
 
         self._chars = [[(' ', (0, 0, 0))
                         for y in range(height)]
@@ -141,7 +150,9 @@ class StdScr:
 
     def reset_font(self):
         '''uses font name and font size, members of this class'''
-        self._font = pygame.font.Font(self._font_name, self._font_size)
+        path = os.path.join(RESOURCE_DIR, FREE_MONO)
+        path = resource_filename(PYTEXTGAME_DIR, path)
+        self._font = pygame.font.Font(path, self._font_size)
 
     def subwin(self, height, width, y, x):
         '''Add the bounding box frame for a given bounding box

@@ -3,9 +3,9 @@
 
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup
+    from distutils.core import setup, find_packages
 
 
 with open('README.rst') as readme_file:
@@ -28,12 +28,16 @@ setup(
     description="Cross-Platform Python Text Game Library",
     long_description=readme + '\n\n' + history,
     author="John Stilley",
-    author_email='kinda personal',
     url='https://github.com/thejollysin/pytextgame',
-    packages=[
-        'pytextgame',
-    ],
-    package_dir={'pytextgame': 'pytextgame'},
+    #packages=[
+    #    'pytextgame',
+    #],
+    packages=find_packages(),
+    #package_data={'': ['*.png', '*.ttf']},
+    package_data={
+        'pytextgame': ['resources/rocket32.png', 'resources/FreeMono.ttf'],
+    },
+    #package_dir={'pytextgame': 'pytextgame'},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
