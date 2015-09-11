@@ -27,8 +27,7 @@ class ColorProperty:
             return self.index
 
 
-# TODO: Make sure I can use dark and bright colors correctly.
-# TODO: These are fine, but the developer should be able to provide 3 numbers to define any old color.
+# TODO: These are fine, but the developer should be able to define any color more generally.
 # TODO: PyGame also allows for background colors that aren't transparent... or should that be handeled in windows?
 MARINE  = ColorProperty( 1, screen.COLOR_BLUE,    False)
 GRASS   = ColorProperty( 2, screen.COLOR_GREEN,   False)

@@ -131,16 +131,15 @@ class TextGameUI(TextUI):
                 if self.key_for(action) == key:
                     acted = action.execute()
 
-    # TODO: Make sure all of these are used!
+    # TODO: Must be implemented by the specific GameUI... make sure this is convenient.
     def char_for(self, action):
-        # TODO: Used in display, but why?
         raise 'Not implemented'
 
-    # TODO: this is too entagled with Phoenix?
+    # TODO: Must be implemented by the specific GameUI... make sure this is convenient.
     def key_for(self, action):
         raise 'Not implemented'
 
-    # TODO: this is too entagled with Phoenix
+    # TODO: Must be implemented by the specific GameUI... make sure this is convenient.
     def group_for(self, action):
         '''Get an action name from the GROUP dict'''
         raise 'Not implemented'

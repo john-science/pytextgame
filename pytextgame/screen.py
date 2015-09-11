@@ -53,25 +53,21 @@ class Screen:
         self._font_size = 16             # TODO: Should be configable?
         self._font_name = LUCIDA         # TODO: Should be more configurable?
         self._bgcolor = (0, 0, 0)        # TODO: Should be configable?
-        font = pygame.font.match_font(self._font_name)
-        self._font = pygame.font.SysFont(font, self._font_size)
+        font_test = pygame.font.match_font(self._font_name)
 
         # TODO: Need to expose this, so it is not default.
         pygame.display.set_icon(pygame.image.load(resource_stream(__name__,
                                                   os.path.join(RESOURCE_DIR, ICON))))
 
-        if font is None or font.lower().find(LUCIDA.split()[0].lower()) == -1:
+        if font_test is None or font_test.lower().find(LUCIDA.split()[0].lower()) == -1:
             # Use FreeMono is system doesn't have Lucida
             self._font_name = FREE_MONO
             self.reset_font()
             self._size_window_4_font()
-            self._dy = -self._y_font_size / 3
-            #self._dy = 0  # TODO: Does this _dy even matter? What is it for?
         else:
-            # Do I relaly want to support System Fonts?
+            # Do I really want to support System Fonts?
             self._font = pygame.font.SysFont(self._font_name, self._font_size)
             self._size_window_4_font()
-            self._dy = 0
 
         # TODO: Need to expose this, so it is not default.
         pygame.display.set_caption(DEFAULT_TITLE)
@@ -95,7 +91,7 @@ class Screen:
         '''Given the X/Y coordinate of the character on the screen, create
         a rectangular bounding box in pixels space
         '''
-        return pygame.Rect(x * self._x_font_size, y * self._y_font_size + self._dy,
+        return pygame.Rect(x * self._x_font_size, y * self._y_font_size,
                            self._x_font_size, self._y_font_size)
 
     def boxes(self):

@@ -59,7 +59,6 @@ class Rectangle:
         '''Return the area of the rectangle'''
         return self.width * self.height
 
-    # TODO: Where is this used?
     def diagonal(self):
         '''Return a positionless vector parallel
         to the diagonal of this rectangle
