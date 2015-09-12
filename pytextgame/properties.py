@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 '''Classes to hold text properties'''
 
 from pytextgame import screen

@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 '''Create a basic text-grid screen using Pygame'''
 
 import os
@@ -39,7 +40,10 @@ class Screen:
     PYTEXTGAME_DIR = 'pytextgame'
     RESOURCE_DIR = 'resources'
     ICON = 'rocket32.png'
-    FREE_MONO = 'FreeMono.ttf'
+    DEJA_MONO = 'DejaVuSansMono.ttf'
+    DEJA_BOLD = 'DejaVuSansMono-Bold.ttf'
+    DEJA_ITAL = 'DejaVuSansMono-Oblique.ttf'
+    DEJA_BOTH = 'DejaVuSansMono-BoldOblique.ttf'
     LUCIDA = 'Lucida Console'
     DEFAULT_TITLE = 'PyTextGame'
     COLORS = [(  0,  0,  0), ( 32, 32, 192), (  0, 156,  0), (  0, 156, 156),
@@ -53,17 +57,17 @@ class Screen:
         self._height = height
         self._width  = width
         self._font_size = 16             # TODO: Should be configable?
-        self._font_name = self.LUCIDA         # TODO: Should be more configurable?
+        self._font_name = self.LUCIDA    # TODO: Should be more configurable?
         self._bgcolor = (0, 0, 0)        # TODO: Should be configable?
         font_test = pygame.font.match_font(self._font_name)
 
-        # TODO: Need to expose this, so it is not default.
+        # TODO: Need to expose this, so it is not default. (def set_icon...)
         pygame.display.set_icon(pygame.image.load(resource_stream(__name__,
                                                   os.path.join(self.RESOURCE_DIR, self.ICON))))
 
         if font_test is None or font_test.lower().find(self.LUCIDA.split()[0].lower()) == -1:
             # Use FreeMono is system doesn't have Lucida
-            self._font_name = self.FREE_MONO
+            self._font_name = self.DEJA_MONO
             self.reset_font()
             self._size_window_4_font()
         else:
@@ -143,7 +147,7 @@ class Screen:
 
     def reset_font(self):
         '''uses font name and font size, members of this class'''
-        path = os.path.join(self.RESOURCE_DIR, self.FREE_MONO)
+        path = os.path.join(self.RESOURCE_DIR, self.DEJA_MONO)
         path = resource_filename(self.PYTEXTGAME_DIR, path)
         self._font = pygame.font.Font(path, self._font_size)
 

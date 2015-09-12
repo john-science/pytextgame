@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 '''A window is a subsection of the charcter grid on the program screen'''
 
 from pytextgame.geometry import Position

@@ -28,7 +28,7 @@ setup(
     url='https://github.com/thejollysin/pytextgame',
     packages=find_packages(),
     package_data={
-        'pytextgame': ['resources/rocket32.png', 'resources/FreeMono.ttf'],
+        'pytextgame': ['resources/*.png', 'resources/*.ttf'],
     },
     include_package_data=True,
     install_requires=requirements,

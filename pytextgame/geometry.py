@@ -1,4 +1,5 @@
-'''Some simple geometric classes.'''
+# -- coding: utf-8 --
+'''geometry necessary to address the grid of characters on the screen'''
 
 import math
 

@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 '''A simple UI for Text Games in Python,
 built on a PyGame-based curses emulator
 '''
