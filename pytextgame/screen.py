@@ -5,19 +5,10 @@ import os
 import pygame
 import sys
 import time
+from colors import *
 from pkg_resources import resource_stream, resource_filename
 if sys.version_info[0] < 3: range = xrange
 
-# Color Constants (TODO: Move to Properties?)
-COLOR_BLACK   = 0
-COLOR_BLUE    = 1
-COLOR_GREEN   = 2
-COLOR_CYAN    = 3
-COLOR_RED     = 4
-COLOR_MAGENTA = 5
-COLOR_YELLOW  = 6
-COLOR_WHITE   = 7
-A_BOLD = 8
 # Key Constants
 KEY_UP    = 257
 KEY_DOWN  = 258
@@ -40,45 +31,39 @@ class Screen:
     PYTEXTGAME_DIR = 'pytextgame'
     RESOURCE_DIR = 'resources'
     ICON = 'rocket32.png'
-    DEJA_MONO = 'DejaVuSansMono.ttf'
-    DEJA_BOLD = 'DejaVuSansMono-Bold.ttf'
-    DEJA_ITAL = 'DejaVuSansMono-Oblique.ttf'
-    DEJA_BOTH = 'DejaVuSansMono-BoldOblique.ttf'
-    LUCIDA = 'Lucida Console'
+    # FONT[is_oblique][is_bold]
+    FONT = {False: {False: 'DejaVuSansMono.ttf',
+            True: 'DejaVuSansMono-Bold.ttf'},
+            True: {False: 'DejaVuSansMono-Oblique.ttf',
+            True: 'DejaVuSansMono-BoldOblique.ttf'}}
+    FONT = {'MONO': 'DejaVuSansMono.ttf',
+            'BOLD': 'DejaVuSansMono-Bold.ttf',
+            'OBLI': 'DejaVuSansMono-Oblique.ttf',
+            'BOTH': 'DejaVuSansMono-BoldOblique.ttf'}
     DEFAULT_TITLE = 'PyTextGame'
-    COLORS = [(  0,  0,  0), ( 32, 32, 192), (  0, 156,  0), (  0, 156, 156),
-              (156,  0,  0), (156,  0, 156), (156, 156,  0), (156, 156, 156),
-              ( 96, 96, 96), ( 96, 96, 255), ( 64, 255, 64), ( 64, 255, 255),
-              (255, 64, 64), (255, 64, 255), (255, 255, 64), (255, 255, 255)]
 
     def __init__(self, height, width):
-        pygame.key.set_repeat(250, 100)  # TODO: Should be configable?
+        pygame.key.set_repeat(250, 100)      # TODO: Should be configable?
         self._id = 0
         self._height = height
         self._width  = width
-        self._font_size = 16             # TODO: Should be configable?
-        self._font_name = self.LUCIDA    # TODO: Should be more configurable?
-        self._bgcolor = (0, 0, 0)        # TODO: Should be configable?
-        font_test = pygame.font.match_font(self._font_name)
+        self._font_size = 16                 # TODO: Should be configable?
+        self._font_name = self.FONT['MONO']  # TODO: Should be more configurable?
+        self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
 
         # TODO: Need to expose this, so it is not default. (def set_icon...)
         pygame.display.set_icon(pygame.image.load(resource_stream(__name__,
                                                   os.path.join(self.RESOURCE_DIR, self.ICON))))
 
-        if font_test is None or font_test.lower().find(self.LUCIDA.split()[0].lower()) == -1:
-            # Use FreeMono is system doesn't have Lucida
-            self._font_name = self.DEJA_MONO
-            self.reset_font()
-            self._size_window_4_font()
-        else:
-            # Do I really want to support System Fonts?
-            self._font = pygame.font.SysFont(self._font_name, self._font_size)
-            self._size_window_4_font()
+        # set font and resize window to fit it
+        self._font_name = self.FONT['MONO']
+        self.reset_font()
+        self._size_window_4_font()
 
         # TODO: Need to expose this, so it is not default.
         pygame.display.set_caption(self.DEFAULT_TITLE)
 
-        self._chars = [[(' ', (0, 0, 0))
+        self._chars = [[(' ', 0)
                         for y in range(height)]
                         for x in range(width)]
 
@@ -90,8 +75,9 @@ class Screen:
 
     def _color(self, x, y):
         '''Get the color at a particular X/Y point on the display.
+        And convert the integer you get to 
         '''
-        return self._chars[x][y][1]
+        return color_int2tuple(self._chars[x][y][1])
 
     def _rect(self, x, y):
         '''Given the X/Y coordinate of the character on the screen, create
@@ -132,7 +118,6 @@ class Screen:
         '''get the pygame display'''
         return self._screen
 
-    # TODO: more clearly demark local system fonts versus paths to fonts
     def font_name(self):
         '''Get the font path or name'''
         return self._font_name
@@ -147,7 +132,7 @@ class Screen:
 
     def reset_font(self):
         '''uses font name and font size, members of this class'''
-        path = os.path.join(self.RESOURCE_DIR, self.DEJA_MONO)
+        path = os.path.join(self.RESOURCE_DIR, self.FONT['MONO'])
         path = resource_filename(self.PYTEXTGAME_DIR, path)
         self._font = pygame.font.Font(path, self._font_size)
 
@@ -159,14 +144,14 @@ class Screen:
 
         return SubWin(self, self._id, height, width, y, x)
 
-    def addstr(self, y, x, text, color=COLOR_WHITE):
+    def addstr(self, y, x, text, color=WHITE):
         '''Add a string to the 2D window character list,
         given an X-position, Y-position, string, and color
         '''
         dx = 0
 
         for c in text:
-            self._chars[x + dx][y] = (c, self.COLORS[int(color)])
+            self._chars[x + dx][y] = (c, color)
             dx += 1
 
     def refresh(self):
@@ -195,7 +180,7 @@ class Screen:
             pw = width * self._x_font_size - self._x_font_size
             ph = height * self._y_font_size - self._y_font_size
 
-            pygame.draw.rect(self.screen(), self.COLORS[COLOR_WHITE],
+            pygame.draw.rect(self.screen(), color_int2tuple(WHITE),
                              pygame.Rect(px, py, pw, ph), 1)
 
         # flip: send the final image to the screen
@@ -207,7 +192,7 @@ class Screen:
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', COLOR_BLACK)
+                self.addstr(y, x, ' ', color_int2tuple(Black))
 
     def box(self):
         '''put a box around this whole screen (could be a window)'''
@@ -312,13 +297,13 @@ class SubWin:
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', COLOR_BLACK)
+                self.addstr(y, x, ' ', WHITE)
 
     # TODO: What if I want to change the color of the border?
     def box(self):
         '''Add a bounding box for this subwindow to the main screen'''
         self.stdscr().add_box(self)
 
-    def addstr(self, y, x, text, color=COLOR_WHITE):
+    def addstr(self, y, x, text, color=WHITE):
         '''Add a string to the subwindow, at X/Y, and give the color'''
         self.stdscr().addstr(y + self.y(), x + self.x(), text, color)

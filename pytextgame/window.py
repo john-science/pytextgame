@@ -2,7 +2,6 @@
 '''A window is a subsection of the charcter grid on the program screen'''
 
 from pytextgame.geometry import Position
-from pytextgame.properties import *
 
 
 class Window:
@@ -50,6 +49,7 @@ class Window:
         x = pos.x + self.border
         y = pos.y + self.border
 
+        # TODO: What are these attributes? Colors and fonts?
         if attributes:
             self.window.addstr(y, x, string, reduce(lambda a, b: a | b, attributes))
         else:
