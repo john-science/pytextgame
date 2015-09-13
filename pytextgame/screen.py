@@ -38,23 +38,25 @@ class Screen:
             True: 'DejaVuSansMono-BoldOblique.ttf'}}
 
     def __init__(self, height, width, icon=None):
+        # general screen info
         self._id = 0
         self._height = height
         self._width  = width
+        self._bgcolor = (0, 0, 0)    # TODO: Should be configable?
+        self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
+        self._boxes = {0: None}
         self.set_repeat(150, 50)
+        # set icon and THEN display and font
         if icon is not None:
             self.set_icon(icon)
         else:
             self.set_icon(resource_stream(__name__, os.path.join(self.RESOURCE_DIR, self.ICON)))
         self.set_caption(self.PYTEXTGAME)
-        self._font_size = 16                 # TODO: Should be configable?
-        self._font_name = self.FONT          # TODO: Should be more configurable?
+        # font info
+        self._font_size = 16         # TODO: Should be configable?
+        self._font_name = self.FONT  # TODO: Should be more configurable?
         self._font = {False: {}, True: {}}
         self.reset_font()
-
-        self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
-        self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
-        self._boxes = {0: None}
 
     def _char(self, x, y):
         '''Get the char at a particular X/Y point on the display. '''
@@ -260,6 +262,10 @@ class Screen:
         '''Open the API to allow for control over key repeat speed'''
         pygame.key.set_repeat(delay, interval)
 
+    def set_bgcolor(self, tup):
+        '''Public method to set the background color'''
+        self._bgcolor = tup
+
 
 class SubWin:
 
@@ -301,7 +307,7 @@ class SubWin:
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', WHITE)  # TODO: White? Does any color work, or should it be black?
+                self.addstr(y, x, ' ', BLACK)
 
     # TODO: What if I want to change the color of the border?
     def box(self):
