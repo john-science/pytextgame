@@ -41,7 +41,7 @@ class Screen:
         self._id = 0
         self._height = height
         self._width  = width
-        pygame.key.set_repeat(250, 100)      # TODO: Should be configable?
+        self.set_repeat(150, 50)
         if icon is not None:
             self.set_icon(icon)
         else:
@@ -55,6 +55,9 @@ class Screen:
         self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
         self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
+
+    def set_repeat(self, delay, interval):
+        pygame.key.set_repeat(delay, interval)
 
     def _char(self, x, y):
         '''Get the char at a particular X/Y point on the display. '''
