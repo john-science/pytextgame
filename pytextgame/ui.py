@@ -8,14 +8,15 @@ from pytextgame import screen
 
 class TextUI:
 
-    def __init__(self, num_rows, num_cols):
+    def __init__(self, num_rows, num_cols, icon):
         self._num_rows = num_rows
         self._num_cols = num_cols
+        self._icon = icon
 
     def main(self):
         '''Start the PyGame screen'''
         screen.wrapper(lambda stdscr: self.set_up_and_run(stdscr),
-                       self._num_rows, self._num_cols)
+                       self._num_rows, self._num_cols, self._icon)
 
     def set_up_and_run(self, stdscr):
         '''Set up and run the UI, though this class does not implement
@@ -41,7 +42,7 @@ class TextUI:
 class TextGameUI(TextUI):
 
     def __init__(self, model):
-        TextUI.__init__(self, model.num_rows, model.num_cols)
+        TextUI.__init__(self, model.num_rows, model.num_cols, model.icon)
         self.model = model
         self._null_key = False
 

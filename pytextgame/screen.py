@@ -17,13 +17,13 @@ KEY_RIGHT = 260
 NULL_KEY = 'Null Key'
 
 
-def wrapper(method, num_rows, num_cols):
+def wrapper(method, num_rows, num_cols, icon):
     '''
     This funtion exists to keep all references
     to pygame in this module.
     '''
     pygame.init()
-    method(Screen(num_rows, num_cols))
+    method(Screen(num_rows, num_cols, icon))
 
 
 class Screen:
@@ -37,24 +37,22 @@ class Screen:
             True: {False: 'DejaVuSansMono-Oblique.ttf',
             True: 'DejaVuSansMono-BoldOblique.ttf'}}
 
-    def __init__(self, height, width):
+    def __init__(self, height, width, icon=None):
         self._id = 0
         self._height = height
         self._width  = width
-        self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
+        pygame.key.set_repeat(250, 100)      # TODO: Should be configable?
+        if icon is not None:
+            self.set_icon(icon)
+        else:
+            self.set_icon(resource_stream(__name__, os.path.join(self.RESOURCE_DIR, self.ICON)))
+        self.set_caption(self.PYTEXTGAME)
         self._font_size = 16                 # TODO: Should be configable?
         self._font_name = self.FONT          # TODO: Should be more configurable?
         self._font = {False: {}, True: {}}
         self.reset_font()
-        pygame.key.set_repeat(250, 100)      # TODO: Should be configable?
 
-        # TODO: Need to expose this, so it is not default. (def set_icon...)
-        pygame.display.set_icon(pygame.image.load(resource_stream(__name__,
-                                                  os.path.join(self.RESOURCE_DIR, self.ICON))))
-
-        # TODO: Need to expose this, so it is not default.
-        pygame.display.set_caption(self.PYTEXTGAME)
-
+        self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
         self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
 
@@ -247,6 +245,16 @@ class Screen:
                     key = None
 
         return key
+
+    def set_caption(self, caption):
+        '''This is currently just a pass through for the pygame caption.'''
+        pygame.display.set_caption(caption)
+
+    def set_icon(self, icon):
+        '''This is mostly just a pass through to pygame, to make
+        the pytextgame API cleaner.
+        '''
+        pygame.display.set_icon(pygame.image.load(icon))
 
 
 class SubWin:
