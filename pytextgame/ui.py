@@ -1,6 +1,6 @@
 # -- coding: utf-8 --
-'''A simple UI for Text Games in Python,
-built on a PyGame-based curses emulator
+'''Simple UIs for Text Games in Python,
+built on pygame
 '''
 
 from pytextgame import screen

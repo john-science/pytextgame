@@ -30,15 +30,15 @@ class Window:
 
         return True
 
-    def write(self, pos, string, attributes=[]):
+    def write(self, pos, string, color, is_obli=False, is_bold=False):
         '''Write text into a window, provided you have a position
-        and some attributes (colors)
+        and some attributes (colors, font style)
         '''
         if not self.can_write(pos) or string is None:
             return
 
         if pos.x < 0:
-            self.write(Position(0, pos.y), string[abs(pos.x):])
+            self.write(Position(0, pos.y), string[abs(pos.x):], color, is_obli, is_bold)
             return
 
         max_len = self.rect.width - pos.x - self.border * 2
@@ -49,11 +49,7 @@ class Window:
         x = pos.x + self.border
         y = pos.y + self.border
 
-        # TODO: What are these attributes? Colors and fonts?
-        if attributes:
-            self.window.addstr(y, x, string, reduce(lambda a, b: a | b, attributes))
-        else:
-            self.window.addstr(y, x, string)
+        self.window.addstr(y, x, string, color, is_obli, is_bold)
 
     def clear(self):
         '''Empty the content of the current sub-window'''

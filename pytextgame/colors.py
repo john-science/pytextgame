@@ -4,15 +4,15 @@
 def color_int2tuple(val):
     '''convert a 9-digit integer into a RGB color tuple'''
     r = val >> 16
-    g = (val - (r * 65536)) >> 8
-    b = val - (r * 65536) - (g * 256)
+    g = (val - (r << 16)) >> 8
+    b = val - (r << 16) - (g << 8)
 
     return (r, g, b)
 
 
-def color_tuple2int(val):
+def color_tuple2int(tup):
     '''convert an RGB color tuple into an integer'''
-    return (65536 * val[0]) + (256 * val[1]) + val[2]
+    return (tup[0] << 16) + (tup[1] << 8) + tup[2]
 
 
 BLACK   = 0

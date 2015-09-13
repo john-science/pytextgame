@@ -36,10 +36,6 @@ class Screen:
             True: 'DejaVuSansMono-Bold.ttf'},
             True: {False: 'DejaVuSansMono-Oblique.ttf',
             True: 'DejaVuSansMono-BoldOblique.ttf'}}
-    FONT = {'MONO': 'DejaVuSansMono.ttf',
-            'BOLD': 'DejaVuSansMono-Bold.ttf',
-            'OBLI': 'DejaVuSansMono-Oblique.ttf',
-            'BOTH': 'DejaVuSansMono-BoldOblique.ttf'}
 
     def __init__(self, height, width):
         self._id = 0
@@ -47,7 +43,8 @@ class Screen:
         self._width  = width
         self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
         self._font_size = 16                 # TODO: Should be configable?
-        self._font_name = self.FONT['MONO']  # TODO: Should be more configurable?
+        self._font_name = self.FONT          # TODO: Should be more configurable?
+        self._font = {False: {}, True: {}}
         self.reset_font()
         pygame.key.set_repeat(250, 100)      # TODO: Should be configable?
 
@@ -58,7 +55,7 @@ class Screen:
         # TODO: Need to expose this, so it is not default.
         pygame.display.set_caption(self.PYTEXTGAME)
 
-        self._chars = [[(' ', 0) for y in range(height)] for x in range(width)]
+        self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
 
     def _char(self, x, y):
@@ -67,9 +64,14 @@ class Screen:
 
     def _color(self, x, y):
         '''Get the color at a particular X/Y point on the display.
-        And convert the integer you get to 
+        And convert the integer you get to an RGB tuple.
         '''
         return color_int2tuple(self._chars[x][y][1])
+
+    def _font_at(self, x, y):
+        '''Get the font at a particular X/Y point on the display.
+        '''
+        return self._chars[x][y][2], self._chars[x][y][3]
 
     def _rect(self, x, y):
         '''Given the X/Y coordinate of the character on the screen, create
@@ -114,24 +116,26 @@ class Screen:
         '''get the pygame display'''
         return self._screen
 
-    def font_name(self):
+    def font_name(self, is_obli=False, is_bold=False):
         '''Get the font path or name'''
-        return self._font_name
+        return self._font_name[is_obli][is_bold]
 
     def font_size(self):
         '''Get the size of the current font'''
         return self._font_size
 
-    def font(self):
+    def font(self, is_obli=False, is_bold=False):
         '''Get the pygame font object'''
-        return self._font
+        return self._font[is_obli][is_bold]
 
     def reset_font(self):
         '''uses font name and font size, members of this class'''
-        path = os.path.join(self.RESOURCE_DIR, self.FONT['MONO'])
-        path = resource_filename(self.PYTEXTGAME, path)
-        self._font = pygame.font.Font(path, self._font_size)
-        (x, y) = self._font.size('@')
+        for is_obli in [False, True]:
+            for is_bold in [False, True]:
+                path = os.path.join(self.RESOURCE_DIR, self.FONT[is_obli][is_bold])
+                path = resource_filename(self.PYTEXTGAME, path)
+                self._font[is_obli][is_bold] = pygame.font.Font(path, self._font_size)
+        (x, y) = self._font[False][False].size('@')
         self._x_font_size = x
         self._y_font_size = y
         self._screen = pygame.display.set_mode((x * self._width, y * self._height),
@@ -145,14 +149,14 @@ class Screen:
 
         return SubWin(self, self._id, height, width, y, x)
 
-    def addstr(self, y, x, text, color=WHITE):
+    def addstr(self, y, x, text, color=WHITE, is_obli=False, is_bold=False):
         '''Add a string to the 2D window character list,
         given an X-position, Y-position, string, and color
         '''
         dx = 0
 
         for c in text:
-            self._chars[x + dx][y] = (c, color)
+            self._chars[x + dx][y] = (c, color, is_obli, is_bold)
             dx += 1
 
     def refresh(self):
@@ -165,7 +169,8 @@ class Screen:
             for y in range(self.height()):
                 char  = self._char(x, y)
                 color = self._color(x, y)
-                text  = self.font().render(char, True, color)
+                is_obli, is_bold = self._font_at(x, y)
+                text  = self.font(is_obli, is_bold).render(char, True, color)
                 # blit: display one image over another
                 self.screen().blit(text, self._rect(x, y))
 
@@ -284,13 +289,13 @@ class SubWin:
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', WHITE)
+                self.addstr(y, x, ' ', WHITE)  # TODO: White? Does any color work, or should it be black?
 
     # TODO: What if I want to change the color of the border?
     def box(self):
         '''Add a bounding box for this subwindow to the main screen'''
         self.stdscr().add_box(self)
 
-    def addstr(self, y, x, text, color=WHITE):
+    def addstr(self, y, x, text, color=WHITE, is_obli=False, is_bold=False):
         '''Add a string to the subwindow, at X/Y, and give the color'''
-        self.stdscr().addstr(y + self.y(), x + self.x(), text, color)
+        self.stdscr().addstr(y + self.y(), x + self.x(), text, color, is_obli, is_bold)
