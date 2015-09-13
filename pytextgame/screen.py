@@ -159,13 +159,13 @@ class Screen:
         self._screen = pygame.display.set_mode((x * self._width, y * self._height),
                                                pygame.RESIZABLE)
 
-    def subwin(self, height, width, y, x):
+    def subwin(self, height, width, y, x, color=WHITE):
         '''Add the bounding box frame for a given bounding box
         And then return a related sub-window'''
         self._id += 1
         self._boxes[self._id] = None
 
-        return SubWin(self, self._id, height, width, y, x)
+        return SubWin(self, self._id, height, width, y, x, color)
 
     def addstr(self, y, x, text, color=WHITE, is_obli=False, is_bold=False):
         '''Add a string to the 2D window character list,
@@ -197,14 +197,14 @@ class Screen:
             if box is None:
                 continue
 
-            (x, y, width, height) = box
+            (x, y, width, height, color) = box
 
             px = x * self._x_font_size + self._x_font_size / 2
             py = y * self._y_font_size + self._y_font_size / 2
             pw = width * self._x_font_size - self._x_font_size
             ph = height * self._y_font_size - self._y_font_size
 
-            pygame.draw.rect(self.screen(), color_int2tuple(WHITE),
+            pygame.draw.rect(self.screen(), color_int2tuple(color),
                              pygame.Rect(px, py, pw, ph), 1)
 
         # flip: send the final image to the screen
@@ -222,9 +222,9 @@ class Screen:
         '''put a box around this whole screen (could be a window)'''
         self.add_box(self)
 
-    def add_box(self, window):
+    def add_box(self, win):
         '''Add a box around any arbitrary window'''
-        self._boxes[window.id()] = (window.x(), window.y(), window.width(), window.height())
+        self._boxes[win.id()] = (win.x(), win.y(), win.width(), win.height(), win.color())
 
     def del_box(self, window):
         '''delete a box from the collection on the screen'''
@@ -291,13 +291,14 @@ class Screen:
 
 class SubWin:
 
-    def __init__(self, stdscr, id, height, width, y, x):
+    def __init__(self, stdscr, id, height, width, y, x, color=WHITE):
         self._stdscr = stdscr
         self._id     = id
         self._x      = x
         self._y      = y
         self._width  = width
         self._height = height
+        self._color  = color
 
     def stdscr(self):
         '''A reference to the container screen for this subwindow'''
@@ -323,6 +324,10 @@ class SubWin:
         '''how tall the subwindow box is, counting by characters'''
         return self._height
 
+    def color(self):
+        '''An integer representing the color of the subwindow'''
+        return self._color
+
     def clear(self):
         '''replace every character in the subwindow with a blank'''
         self.stdscr().del_box(self)
@@ -331,7 +336,6 @@ class SubWin:
             for y in range(self.height()):
                 self.addstr(y, x, ' ', BLACK)
 
-    # TODO: What if I want to change the color of the border?
     def box(self):
         '''Add a bounding box for this subwindow to the main screen'''
         self.stdscr().add_box(self)

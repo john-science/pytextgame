@@ -4,6 +4,7 @@ built on pygame
 '''
 
 from pytextgame import screen
+from colors import WHITE
 
 
 class TextUI:
@@ -106,7 +107,7 @@ class TextGameUI(TextUI):
         for window in self.displayed_windows():
             window.stdscr.refresh()
 
-    def create_window(self, kind, rect, border=True):
+    def create_window(self, kind, rect, border=WHITE):
         '''Helper method to add a subwindow to the screen'''
         return kind(self, self.stdscr, self.model, rect, border)
 
