@@ -46,15 +46,16 @@ class Screen:
         self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
         self.set_repeat(150, 50)
-        # set icon and THEN display and font
+        # set icon and THEN start pygame display (which we do when we set the font)
         if icon is not None:
             self.set_icon(icon)
         else:
             self.set_icon(resource_stream(__name__, os.path.join(self.RESOURCE_DIR, self.ICON)))
         self.set_caption(self.PYTEXTGAME)
         # font info
-        self._font_size = 16         # TODO: Should be configable?
-        self._font_name = self.FONT  # TODO: Should be more configurable?
+        self._font_size = 16
+        self._font_path = {False: {}, True: {}}
+        self.init_font_paths()
         self._font = {False: {}, True: {}}
         self.reset_font()
 
@@ -116,10 +117,6 @@ class Screen:
         '''get the pygame display'''
         return self._screen
 
-    def font_name(self, is_obli=False, is_bold=False):
-        '''Get the font path or name'''
-        return self._font_name[is_obli][is_bold]
-
     def font_size(self):
         '''Get the size of the current font'''
         return self._font_size
@@ -132,12 +129,29 @@ class Screen:
         '''Get the pygame font object'''
         return self._font[is_obli][is_bold]
 
-    def reset_font(self):
-        '''uses font name and font size, members of this class'''
+    def init_font_paths(self):
+        '''Initialize all four fonts.
+        '''
         for is_obli in [False, True]:
             for is_bold in [False, True]:
                 path = os.path.join(self.RESOURCE_DIR, self.FONT[is_obli][is_bold])
-                path = resource_filename(self.PYTEXTGAME, path)
+                self._font_path[is_obli][is_bold] = resource_filename(self.PYTEXTGAME, path)
+
+    def set_font_path(self, font, is_obli, is_bold):
+        '''Set one of the four basic fonts: normal, oblique (italic), bold, and bold/oblique.
+        NOTE: Screen size is determined based off the normal font.
+        NOTE: If you choose unrelated fonts for each of the four cases, they may not be the
+        same size and your display will come out looking strange.
+        '''
+        self._font_path[is_obli][is_bold] = font
+
+    def reset_font(self):
+        '''Reset all four fonts.
+        Also has to reset the pygame display for this change to take effect.
+        '''
+        for is_obli in [False, True]:
+            for is_bold in [False, True]:
+                path = self._font_path[is_obli][is_bold]
                 self._font[is_obli][is_bold] = pygame.font.Font(path, self._font_size)
         (x, y) = self._font[False][False].size('@')
         self._x_font_size = x
