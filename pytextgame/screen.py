@@ -28,7 +28,7 @@ def wrapper(method, num_rows, num_cols):
 
 class Screen:
 
-    PYTEXTGAME_DIR = 'pytextgame'
+    PYTEXTGAME = 'pytextgame'
     RESOURCE_DIR = 'resources'
     ICON = 'rocket32.png'
     # FONT[is_oblique][is_bold]
@@ -40,33 +40,25 @@ class Screen:
             'BOLD': 'DejaVuSansMono-Bold.ttf',
             'OBLI': 'DejaVuSansMono-Oblique.ttf',
             'BOTH': 'DejaVuSansMono-BoldOblique.ttf'}
-    DEFAULT_TITLE = 'PyTextGame'
 
     def __init__(self, height, width):
-        pygame.key.set_repeat(250, 100)      # TODO: Should be configable?
         self._id = 0
         self._height = height
         self._width  = width
+        self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
         self._font_size = 16                 # TODO: Should be configable?
         self._font_name = self.FONT['MONO']  # TODO: Should be more configurable?
-        self._bgcolor = (0, 0, 0)            # TODO: Should be configable?
+        self.reset_font()
+        pygame.key.set_repeat(250, 100)      # TODO: Should be configable?
 
         # TODO: Need to expose this, so it is not default. (def set_icon...)
         pygame.display.set_icon(pygame.image.load(resource_stream(__name__,
                                                   os.path.join(self.RESOURCE_DIR, self.ICON))))
 
-        # set font and resize window to fit it
-        self._font_name = self.FONT['MONO']
-        self.reset_font()
-        self._size_window_4_font()
-
         # TODO: Need to expose this, so it is not default.
-        pygame.display.set_caption(self.DEFAULT_TITLE)
+        pygame.display.set_caption(self.PYTEXTGAME)
 
-        self._chars = [[(' ', 0)
-                        for y in range(height)]
-                        for x in range(width)]
-
+        self._chars = [[(' ', 0) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
 
     def _char(self, x, y):
@@ -93,23 +85,27 @@ class Screen:
         return self._boxes
 
     def id(self):
-        '''The main screen should have a static id'''
+        '''A (hopefully) unique id for the current screen or window.
+        This is zero on the main screen, but must be overriden in subclasses.
+        in subclasses.'''
         return 0
 
     def x(self):
-        '''The horizontal size of the font in pixels'''
+        '''X coord of the top-left corner of the window.
+        This is zero on the main screen, but must be overriden in subclasses.
+        '''
         return 0
 
     def y(self):
-        '''The vertical size of the font in pixels'''
+        '''Y coord of the top-left corner of the window.
+        This is zero on the main screen, but must be overriden in subclasses.
+        '''
         return 0
 
-    # TODO: should I change the name of this to be "num_cols"?
     def width(self):
         '''Number of columns of text in the window'''
         return self._width
 
-    # TODO: should I change the name of this to be "num_rows"?
     def height(self):
         '''Number of rows of text in the window'''
         return self._height
@@ -133,8 +129,13 @@ class Screen:
     def reset_font(self):
         '''uses font name and font size, members of this class'''
         path = os.path.join(self.RESOURCE_DIR, self.FONT['MONO'])
-        path = resource_filename(self.PYTEXTGAME_DIR, path)
+        path = resource_filename(self.PYTEXTGAME, path)
         self._font = pygame.font.Font(path, self._font_size)
+        (x, y) = self._font.size('@')
+        self._x_font_size = x
+        self._y_font_size = y
+        self._screen = pygame.display.set_mode((x * self._width, y * self._height),
+                                               pygame.RESIZABLE)
 
     def subwin(self, height, width, y, x):
         '''Add the bounding box frame for a given bounding box
@@ -227,13 +228,11 @@ class Screen:
                     elif event.key == pygame.K_F1:
                         self._font_size += 1
                         self.reset_font()
-                        self._size_window_4_font()
                         key = NULL_KEY
                     elif event.key == pygame.K_F2:
                         if self._font_size > 5:
                             self._font_size -= 1
                             self.reset_font()
-                            self._size_window_4_font()
                             key = NULL_KEY
                     elif len(event.unicode) >= 1:
                         key = ord(event.unicode)
@@ -243,16 +242,6 @@ class Screen:
                     key = None
 
         return key
-
-    def _size_window_4_font(self):
-        '''Updates the window size based on the requirements
-        of the font size.
-        '''
-        (x, y) = self._font.size('@')
-        self._x_font_size = x
-        self._y_font_size = y
-        self._screen = pygame.display.set_mode((x * self._width, y * self._height),
-                                               pygame.RESIZABLE)
 
 
 class SubWin:
@@ -273,14 +262,12 @@ class SubWin:
         '''Used to identify which subwindow is on the screen'''
         return self._id
 
-    # TODO: These coordinates, which corner is the origin?
     def x(self):
-        '''X-coordinate of corner of subwindow bounding box'''
+        '''X-coordinate of the top-left corner of subwindow bounding box'''
         return self._x
 
-    # TODO: These coordinates, which corner is the origin?
     def y(self):
-        '''Y-coordinate of corner of subwindow bounding box'''
+        '''Y-coordinate of the top-left corner of subwindow bounding box'''
         return self._y
 
     def width(self):
