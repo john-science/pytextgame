@@ -56,9 +56,6 @@ class Screen:
         self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
 
-    def set_repeat(self, delay, interval):
-        pygame.key.set_repeat(delay, interval)
-
     def _char(self, x, y):
         '''Get the char at a particular X/Y point on the display. '''
         return self._chars[x][y][0]
@@ -258,6 +255,10 @@ class Screen:
         the pytextgame API cleaner.
         '''
         pygame.display.set_icon(pygame.image.load(icon))
+
+    def set_repeat(self, delay, interval):
+        '''Open the API to allow for control over key repeat speed'''
+        pygame.key.set_repeat(delay, interval)
 
 
 class SubWin:
