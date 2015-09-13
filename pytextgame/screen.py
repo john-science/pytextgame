@@ -263,8 +263,12 @@ class Screen:
         pygame.key.set_repeat(delay, interval)
 
     def set_bgcolor(self, tup):
-        '''Public method to set the background color'''
+        '''Public background color setter method'''
         self._bgcolor = tup
+
+    def bgcolor(self):
+        '''Public background color getter method'''
+        return self._bgcolor
 
 
 class SubWin:
