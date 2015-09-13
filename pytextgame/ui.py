@@ -4,6 +4,7 @@ built on pygame
 '''
 
 from pytextgame import screen
+from pytextgame.window import Window
 from colors import WHITE
 
 
@@ -46,6 +47,7 @@ class TextGameUI(TextUI):
         TextUI.__init__(self, model.num_rows, model.num_cols, model.icon)
         self.model = model
         self._null_key = False
+        self.windows = {}
 
     def init(self):
         pass
@@ -134,23 +136,31 @@ class TextGameUI(TextUI):
                 if self.key_for(action) == key:
                     acted = action.execute()
 
-    # TODO: Must be implemented by the specific GameUI... make sure this is convenient.
-    def char_for(self, action):
-        raise 'Not implemented'
+    def add_window(self, key_name, window):
+        '''Helper method to correctly build a dictionary of Windows'''
+        key_name = str(key_name)
+        if not isinstance(window, Window):
+            raise TypeError('You cannot add that, because it is not a Window.')
 
-    # TODO: Must be implemented by the specific GameUI... make sure this is convenient.
-    def key_for(self, action):
-        raise 'Not implemented'
-
-    # TODO: Must be implemented by the specific GameUI... make sure this is convenient.
-    def group_for(self, action):
-        '''Get an action name from the GROUP dict'''
-        raise 'Not implemented'
+        self.windows[key_name] = window
 
     def displayed_windows(self):
         '''Return a list of subwindows'''
-        raise 'Not implemented'
+        return self.windows.values()
 
     def window(self, name):
-        '''Get a window based on it's name key'''
+        '''Get a window using it's name key'''
+        return self.windows.get(name, None)
+
+    # TODO: Too specific, move out of API?
+    def char_for(self, action):
+        raise 'Not implemented'
+
+    # TODO: Too specific, move out of API?
+    def key_for(self, action):
+        raise 'Not implemented'
+
+    # TODO: Too specific, move out of API.
+    def group_for(self, action):
+        '''Get an action name from the GROUP dict'''
         raise 'Not implemented'
