@@ -42,7 +42,7 @@ class Screen:
         self._id = 0
         self._height = height
         self._width  = width
-        self._bgcolor = (0, 0, 0)    # TODO: Should be configable?
+        self._bgcolor = (0, 0, 0)
         self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
         self.set_repeat(150, 50)
@@ -123,6 +123,10 @@ class Screen:
     def font_size(self):
         '''Get the size of the current font'''
         return self._font_size
+
+    def set_font_size(self, num):
+        '''Public Setter for font size'''
+        self._font_size = num
 
     def font(self, is_obli=False, is_bold=False):
         '''Get the pygame font object'''
