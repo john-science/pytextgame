@@ -151,16 +151,3 @@ class TextGameUI(TextUI):
     def window(self, name):
         '''Get a window using it's name key'''
         return self.windows.get(name, None)
-
-    # TODO: Too specific, move out of API?
-    def char_for(self, action):
-        raise 'Not implemented'
-
-    # TODO: Too specific, move out of API?
-    def key_for(self, action):
-        raise 'Not implemented'
-
-    # TODO: Too specific, move out of API.
-    def group_for(self, action):
-        '''Get an action name from the GROUP dict'''
-        raise 'Not implemented'
