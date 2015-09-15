@@ -4,7 +4,7 @@ built on pygame
 '''
 
 from pytextgame import screen
-from pytextgame.window import Window
+from pytextgame.window import Window, Windows
 from colors import WHITE
 
 
@@ -45,9 +45,11 @@ class TextGameUI(TextUI):
 
     def __init__(self, model):
         TextUI.__init__(self, model.num_rows, model.num_cols, model.icon)
+        # TODO: I need to move VERY MINIMAL versions of Game, and Actions into pytextgame (VERY minimal: Situation and Application might have to come along though.
+        # The model here subclass Application and Game
         self.model = model
         self._null_key = False
-        self.windows = {}
+        self.windows = Windows()
 
     def init(self):
         pass
@@ -62,11 +64,13 @@ class TextGameUI(TextUI):
         '''
         self.model.start()
 
+        # TODO: Move is_running into the API.
         while self.model.is_running():
             self.model.do_turn()
             self.do_turn()
 
     def prepare_turn(self):
+        # TODO: Should this raise NotImplemented? Or... what is this for?
         pass
 
     def do_turn(self):
@@ -131,10 +135,12 @@ class TextGameUI(TextUI):
 
             self.display()
 
+            # TODO: 1. I guess actions need to be part of the API...
+            # TODO: 2. This loop seems unnecessary... just have a dictionary of actions, right?
             actions = self.model.available_actions()
             for action in actions:
                 if self.key_for(action) == key:
-                    acted = action.execute()
+                    acted = action.execute()  # TODO: Can '.execute()' alter '.windows'?
 
     def add_window(self, key_name, window):
         '''Helper method to correctly build a dictionary of Windows'''

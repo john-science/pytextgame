@@ -241,7 +241,7 @@ class Screen:
                 elif event.type == pygame.KEYDOWN:
                     # TODO: Shorten this? Map pygame.KEY_WHATEVER to CONSTANT
                     if event.key == pygame.K_UP:
-                        key = KEY_UP
+                        key = KEY_UP  # Why not just return pygame.K_UP = 273???
                     elif event.key == pygame.K_DOWN:
                         key = KEY_DOWN
                     elif event.key == pygame.K_LEFT:

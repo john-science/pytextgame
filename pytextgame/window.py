@@ -79,3 +79,14 @@ class Window:
 
     def display(self):
         raise 'Not implemented'
+
+
+
+class Windows(dict):
+
+    def __setitem__(self, key, item):
+        '''validator method to ensure all values are Windows'''
+        if not isinstance(item, Window):
+            raise TypeError('You cannot add that, because it is not a Window.')
+
+        dict.__setitem__(self, key, item)
