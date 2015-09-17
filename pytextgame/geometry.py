@@ -4,7 +4,7 @@
 import math
 
 
-class Position:
+class Position(object):
 
     def __init__(self, x, y):
         self.x = x
@@ -43,7 +43,7 @@ class Position:
         return 'Position(%d, %d)' % (self.x, self.y)
 
 
-class Rectangle:
+class Rectangle(object):
 
     def __init__(self, x, y, width, height):
         self.x = x
@@ -65,7 +65,7 @@ class Rectangle:
         return 'Rectangle(%d, %d, %d, %d)' % (self.x, self.y, self.width, self.height)
 
 
-class Direction:
+class Direction(object):
 
     def __init__(self, dx, dy, name=None):
         self.dx = dx

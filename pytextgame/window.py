@@ -5,7 +5,7 @@ from pytextgame.geometry import Position
 from colors import WHITE
 
 
-class Window:
+class Window(object):
 
     def __init__(self, ui, stdscr, model, rect, border=WHITE):
         self.ui = ui

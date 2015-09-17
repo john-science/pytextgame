@@ -1,27 +1,31 @@
-'''General sketch of running applications.'''
+'''Minimal sketch of pytextgame apps'''
 
 
-class Application:
+class Application(object):
 
     def __init__(self):
-        self._running = False
+        self._new_ui = False
         self._events  = []
 
     # TODO: Is this method, and self._running an artifact of the minimal number of game screens?
     #       Does this need to go when we have more than play/do_scores?
-    def is_running(self):
-        '''Is the application currently running, or is the game over?'''
-        return self._running
+    def new_ui(self):
+        '''TODO: Is the application currently running, or is the game over?'''
+        return self._new_ui
+
+    def set_new_ui(self, ui_str):
+        '''Setter for new UI representative string'''
+        self._new_ui = ui_str
 
     def start(self):
         '''Start the game'''
-        self._running = True
+        self._new_ui = False
         self.do_start()
 
     def stop(self):
         '''Stop the game'''
         self.do_stop()
-        self._running = False
+        self._new_ui = False
 
     def do_start(self):
         '''Perform initial setup of the Game and state'''
@@ -87,8 +91,9 @@ class Game(Application):
         raise 'Not implemented'
 
 
+# TODO: Possibly move this to it's own module.
 # TODO: You can have multiple Displays, and each display might have multiple possible situations.
-class Situation:
+class Situation(object):
 
     def __init__(self, model, name=None):
         # model is a subclass of Game

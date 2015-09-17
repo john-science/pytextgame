@@ -3,7 +3,8 @@
 import sys
 
 
-class Action:
+# TODO: Perhaps _model would be more clear if it were _app or _game.
+class Action(object):
 
     def __init__(self, situation, name, suffix=None):
         # situation is like "outdoors" or "indoors"

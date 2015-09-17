@@ -1,10 +1,9 @@
 '''Basic event classes.'''
 
 
-class Event:
+class Event(object):
 
     def __init__(self, source, target):
-        print source
         if source is not None:
             self._model = source.model()
 
@@ -33,4 +32,3 @@ class Event:
 
     def do(self):
         raise 'Not implemented in ' + str(self)
-

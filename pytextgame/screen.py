@@ -26,7 +26,7 @@ def wrapper(method, num_rows, num_cols, icon):
     method(Screen(num_rows, num_cols, icon))
 
 
-class Screen:
+class Screen(object):
 
     PYTEXTGAME = 'pytextgame'
     RESOURCE_DIR = 'resources'
@@ -216,7 +216,7 @@ class Screen:
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', color_int2tuple(Black))
+                self.addstr(y, x, ' ', BLACK)
 
     def box(self):
         '''put a box around this whole screen (could be a window)'''
@@ -289,7 +289,7 @@ class Screen:
         return self._bgcolor
 
 
-class SubWin:
+class SubWin(object):
 
     def __init__(self, stdscr, id, height, width, y, x, color=WHITE):
         self._stdscr = stdscr

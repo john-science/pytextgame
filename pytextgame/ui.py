@@ -8,7 +8,7 @@ from pytextgame.window import Window, Windows
 from colors import WHITE
 
 
-class TextUI:
+class TextUI(object):
 
     def __init__(self, num_rows, num_cols, icon):
         self._num_rows = num_rows
@@ -50,6 +50,7 @@ class TextGameUI(TextUI):
         self.model = model
         self._null_key = False
         self.windows = Windows()
+        self._fresh_display = {}
 
     def init(self):
         pass
@@ -64,8 +65,14 @@ class TextGameUI(TextUI):
         '''
         self.model.start()
 
-        # TODO: Move is_running into the API.
-        while self.model.is_running():
+        while True:
+            if self.model.new_ui():
+                # TODO: Add UI-switching logic here
+                #print self.model.new_ui()
+                if self.model.new_ui():
+                    self.update_windows(self.model.new_ui())
+                    self.model._new_ui = False  # TODO: sigh... setters and getters...
+                #pass
             self.model.do_turn()
             self.do_turn()
 
@@ -84,7 +91,7 @@ class TextGameUI(TextUI):
         # render screen
         if self._null_key:
             # if only null user input, render using memoized screen
-            self.display_last()
+            self.display_last()  # TODO: Why do I have to re-render at all? Why not just let it be?
             self._null_key = False
         else:
             # render fresh screen
@@ -117,6 +124,19 @@ class TextGameUI(TextUI):
         '''Helper method to add a subwindow to the screen'''
         return kind(self, self.stdscr, self.model, rect, border)
 
+    def update_windows(self, display):
+        '''Update the display of all windows on the screen
+        '''
+        self.windows = Windows()
+        self.stdscr.clear()
+        for wname, wlst in self._fresh_displays[display].iteritems():
+            if len(wlst) == 2:
+                self.windows[wname] = self.create_window(wlst[0], wlst[1])
+            elif len(wlst) == 3:
+                self.windows[wname] = self.create_window(wlst[0], wlst[1], wlst[2])
+            else:
+                raise ValueError('TODO: Is there a better way to implement this block?')
+
     def act(self):
         '''wait for user input and perform any actions necessary
         if a null key is returned, no actions are necessary
@@ -135,8 +155,7 @@ class TextGameUI(TextUI):
 
             self.display()
 
-            # TODO: 1. I guess actions need to be part of the API...
-            # TODO: 2. This loop seems unnecessary... just have a dictionary of actions, right?
+            # TODO: This loop seems unnecessary... just have a dictionary of actions, right?
             actions = self.model.available_actions()
             for action in actions:
                 if self.key_for(action) == key:
