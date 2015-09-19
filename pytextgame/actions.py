@@ -10,12 +10,8 @@ class Action(object):
         # situation is like "outdoors" or "indoors"
         self.situation = situation
 
-        # TODO: A better default in Situation would remove this 'if' block.
         # model is subclass of game
-        if situation is None:
-            self._model = None
-        else:
-            self._model = situation.model()
+        self._model = None if situation is None else situation.model()
 
         self.name   = name
         self.suffix = suffix

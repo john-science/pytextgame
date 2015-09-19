@@ -10,11 +10,6 @@ class Event(object):
         self._source = source
         self._target = target
 
-    # TODO: This is too specific, it needs to be removed.
-    def is_flavor(self):
-        '''Is this a subclass of FlavorEvent?'''
-        return False
-
     def model(self):
         '''Returns the current subclass of Game'''
         return self._model

@@ -9,10 +9,8 @@ class Application(object):
         self._new_ui = False
         self._events  = []
 
-    # TODO: Is this method, and self._running an artifact of the minimal number of game screens?
-    #       Does this need to go when we have more than play/do_scores?
     def new_ui(self):
-        '''TODO: Is the application currently running, or is the game over?'''
+        '''returns False or a string keyword for the new UI'''
         return self._new_ui
 
     def set_new_ui(self, ui_str):
@@ -64,31 +62,13 @@ class Application(object):
         raise 'Not implemented'
 
 
-# TODO: Game seems to be designed for two game states: the game itself and the score/end/win/loss screen.
-#       This seems very limiting. I need to open this up to multiple screens.
 class Game(Application):
 
     def __init__(self):
         Application.__init__(self)
-        self._won = False # TODO: Ditch this.
-
-    # TODO: a bit archaic, should be part of the UI switching system
-    def has_won(self):
-        '''Returns a stored boolean that says if the game has been won'''
-        return self._won
-
-    def win(self):
-        '''Once you win the game, flip the switch and stop the game'''
-        self._won = True
-        self.stop()
 
     def do_turn(self):
         '''The meat of the game logic will go here'''
-        raise 'Not implemented'
-
-    # TODO: This is a remnant of the time before UI switching
-    def score(self):
-        '''perform the scoreboard logic'''
         raise 'Not implemented'
 
 

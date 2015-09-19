@@ -98,10 +98,6 @@ class TextGameUI(TextUI):
         # look for user input and perform necessary actions
         self.act()
 
-    def do_scores(self):
-        # TODO: Just scores? We need better support for multiple menus.
-        pass
-
     def display(self):
         '''display every window in this UI'''
         # re-draw every sub-window
