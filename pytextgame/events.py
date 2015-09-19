@@ -4,22 +4,26 @@
 class Event(object):
 
     def __init__(self, source, target):
-        if source is not None:
-            self._model = source.model()
-
-        self._source = source
         self._target = target
+        self._source = source
+        self._game = None
+        if source is not None:
+            self._game = source.game()
 
-    def model(self):
+    def game(self):
         '''Returns the current subclass of Game'''
-        return self._model
+        return self._game
 
     def source(self):
-        '''TODO'''
+        '''The source is typically a subclass of Position,
+        something like a location or enemy
+        '''
         return self._source
 
     def target(self):
-        '''TODO'''
+        '''The target is typically a subclass of Position,
+        Something like the player
+        '''
         return self._target
 
     def description(self):
