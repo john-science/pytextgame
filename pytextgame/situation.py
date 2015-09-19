@@ -4,7 +4,6 @@
 class Situation(object):
 
     def __init__(self, game):
-        # TODO: consider chaning the name model to game
         self._game = game
 
     def game(self):

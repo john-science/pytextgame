@@ -43,10 +43,9 @@ class TextUI(object):
 
 class TextGameUI(TextUI):
 
-    def __init__(self, model):
-        TextUI.__init__(self, model.num_rows, model.num_cols, model.icon)
-        # The model here subclass Application and Game (consider changing the name from model to game)
-        self.model = model
+    def __init__(self, game):
+        TextUI.__init__(self, game.num_rows, game.num_cols, game.icon)
+        self.game = game
         self._null_key = False
         self.windows = Windows()
         self.fresh_displays = {}
@@ -62,16 +61,16 @@ class TextGameUI(TextUI):
         '''master method to handle rendering displaying,
         modifying game state, and handling user input
         '''
-        self.model.start()
+        self.game.start()
 
         # TODO: Along with new UI, I need to provide a new situation, which can swap out the available keys/actions.
         while True:
-            if self.model.new_ui():
-                # TODO: Add UI-switching logic here
-                if self.model.new_ui():
-                    self.update_windows(self.model.new_ui())
-                    self.model._new_ui = False  # TODO: sigh... setters and getters...
-            self.model.do_turn()
+            if self.game.new_ui():
+                # UI-switching logic
+                if self.game.new_ui():
+                    self.update_windows(self.game.new_ui())
+                    self.game._new_ui = False  # TODO: sigh... setters and getters...
+            self.game.do_turn()
             self.do_turn()
 
     def prepare_turn(self):
@@ -116,7 +115,7 @@ class TextGameUI(TextUI):
 
     def create_window(self, kind, rect, border=WHITE):
         '''Helper method to add a subwindow to the screen'''
-        return kind(self, self.stdscr, self.model, rect, border)
+        return kind(self, self.stdscr, self.game, rect, border)
 
     def update_windows(self, display):
         '''Update the display of all windows on the screen
@@ -150,7 +149,7 @@ class TextGameUI(TextUI):
             self.display()
 
             # TODO: This loop seems unnecessary... just have a dictionary of actions, right?
-            actions = self.model.available_actions()
+            actions = self.game.available_actions()
             for action in actions:
                 if self.key_for(action) == key:
                     acted = action.execute()  # TODO: Can '.execute()' alter '.windows'?
