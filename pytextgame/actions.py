@@ -11,7 +11,7 @@ class Action(object):
         self.situation = situation
 
         # model is subclass of game
-        self._model = None if situation is None else situation.model()
+        self._model = None if situation is None else situation.game()
 
         self.name   = name
         self.suffix = suffix
@@ -20,7 +20,7 @@ class Action(object):
     def set_situation(self, situation):
         '''Set the containing situation for this action'''
         self.situation = situation
-        self._model = situation.model()
+        self._model = situation.game()
 
     def model(self):
         '''getting for model (a subclass o game)'''
