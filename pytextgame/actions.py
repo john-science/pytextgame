@@ -3,15 +3,13 @@
 import sys
 
 
-# TODO: Perhaps _model would be more clear if it were _app or _game.
 class Action(object):
 
     def __init__(self, situation, name, suffix=None):
-        # situation is like "outdoors" or "indoors"
+        '''Actions subclass nothing, but require situations to hold them'''
+        # a situation is like "outdoors", "indoors", or "fighting"
         self.situation = situation
-
-        # model is subclass of game
-        self._model = None if situation is None else situation.game()
+        self._game = None if situation is None else situation.game()
 
         self.name   = name
         self.suffix = suffix
@@ -20,11 +18,11 @@ class Action(object):
     def set_situation(self, situation):
         '''Set the containing situation for this action'''
         self.situation = situation
-        self._model = situation.game()
+        self._game = situation.game()
 
-    def model(self):
-        '''getting for model (a subclass o game)'''
-        return self._model
+    def game(self):
+        '''getting the current subclass of game'''
+        return self._game
 
     def info(self):
         '''placeholder: generic return a string describing this action'''
