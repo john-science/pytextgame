@@ -7,10 +7,10 @@ from colors import WHITE
 
 class Window(object):
 
-    def __init__(self, ui, stdscr, model, rect, border=WHITE):
+    def __init__(self, ui, stdscr, game, rect, border=WHITE):
         self.ui = ui
         self.stdscr = stdscr
-        self.model = model
+        self.game = game
         self.rect = rect
         self.border = border
         self.has_border = True if border > -1 else False
