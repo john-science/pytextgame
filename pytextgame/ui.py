@@ -45,12 +45,11 @@ class TextGameUI(TextUI):
 
     def __init__(self, model):
         TextUI.__init__(self, model.num_rows, model.num_cols, model.icon)
-        # TODO: I need to move VERY MINIMAL versions of Game, and Actions into pytextgame (VERY minimal: Situation and Application might have to come along though.
-        # The model here subclass Application and Game
+        # The model here subclass Application and Game (consider changing the name from model to game)
         self.model = model
         self._null_key = False
         self.windows = Windows()
-        self._fresh_display = {}
+        self.fresh_displays = {}
 
     def init(self):
         pass
@@ -65,14 +64,13 @@ class TextGameUI(TextUI):
         '''
         self.model.start()
 
+        # TODO: Along with new UI, I need to provide a new situation, which can swap out the available keys/actions.
         while True:
             if self.model.new_ui():
                 # TODO: Add UI-switching logic here
-                #print self.model.new_ui()
                 if self.model.new_ui():
                     self.update_windows(self.model.new_ui())
                     self.model._new_ui = False  # TODO: sigh... setters and getters...
-                #pass
             self.model.do_turn()
             self.do_turn()
 
@@ -129,7 +127,7 @@ class TextGameUI(TextUI):
         '''
         self.windows = Windows()
         self.stdscr.clear()
-        for wname, wlst in self._fresh_displays[display].iteritems():
+        for wname, wlst in self.fresh_displays[display].iteritems():
             if len(wlst) == 2:
                 self.windows[wname] = self.create_window(wlst[0], wlst[1])
             elif len(wlst) == 3:

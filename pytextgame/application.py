@@ -4,6 +4,8 @@
 class Application(object):
 
     def __init__(self):
+        self._situations = {}
+        self.situation = None
         self._new_ui = False
         self._events  = []
 
@@ -49,12 +51,12 @@ class Application(object):
 
         return events
 
-    def current_situation(self):
-        '''What is the current situation?'''
-        raise 'Not implemented'
+    def set_situation(self, situation_str):
+        '''TODO'''
+        self.situation = self._situations[situation_str](self)
 
-    # TODO: What does this do again? Resolve a sequence of events?
     def resolve_situation(self, situation):
+        '''TODO'''
         raise 'Not implemented'
 
     def available_actions(self):
@@ -68,8 +70,7 @@ class Game(Application):
 
     def __init__(self):
         Application.__init__(self)
-
-        self._won = False
+        self._won = False # TODO: Ditch this.
 
     # TODO: a bit archaic, should be part of the UI switching system
     def has_won(self):
@@ -95,10 +96,9 @@ class Game(Application):
 # TODO: You can have multiple Displays, and each display might have multiple possible situations.
 class Situation(object):
 
-    def __init__(self, model, name=None):
-        # model is a subclass of Game
+    def __init__(self, model):
+        # TODO: consider chaning the name model to game
         self._model = model
-        self._name  = name
 
     def model(self):
         '''Return the model, a subclass of Game'''
@@ -115,6 +115,3 @@ class Situation(object):
     def available_actions(self):
         '''Return a collection of valid actions'''
         raise 'Not implemented'
-
-    def __str__(self):
-        return self.name()
