@@ -78,8 +78,7 @@ class Window(object):
         self.window.refresh()
 
     def display(self):
-        raise 'Not implemented'
-
+        raise Exception("Not Implemented")
 
 
 class Windows(dict):

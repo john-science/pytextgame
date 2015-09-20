@@ -35,10 +35,10 @@ class TextUI(object):
         return self.stdscr.getch()
 
     def init(self):
-        raise 'Not implemented'
+        raise Exception("Not Implemented")
 
     def run(self):
-        raise 'Not implemented'
+        raise Exception("Not Implemented")
 
 
 class TextGameUI(TextUI):
@@ -74,15 +74,15 @@ class TextGameUI(TextUI):
             self.do_turn()
 
     def prepare_turn(self):
-        # TODO: Should this raise NotImplemented? Or... what is this for?
-        pass
+        '''setup whatever you need for this turn'''
+        raise Exception("Not Implemented")
 
     def do_turn(self):
         '''Do a single turn of render-input
         Allow to render using memoized data from last pull,
         if no user-input is given.
         '''
-        # pull information necessary to render
+        # setup information necessary to render
         self.prepare_turn()
 
         # render screen
@@ -128,7 +128,7 @@ class TextGameUI(TextUI):
             elif len(wlst) == 3:
                 self.windows[wname] = self.create_window(wlst[0], wlst[1], wlst[2])
             else:
-                raise ValueError('TODO: Is there a better way to implement this block?')
+                raise ValueError('TODO: Is there a better way? Type checking on fresh_displays?')
 
     def act(self):
         '''wait for user input and perform any actions necessary
@@ -152,7 +152,7 @@ class TextGameUI(TextUI):
             actions = self.game.available_actions()
             for action in actions:
                 if self.key_for(action) == key:
-                    acted = action.execute()  # TODO: Can '.execute()' alter '.windows'?
+                    acted = action.execute()
 
     def add_window(self, key_name, window):
         '''Helper method to correctly build a dictionary of Windows'''

@@ -22,4 +22,4 @@ class Situation(object):
 
     def available_actions(self):
         '''Return a collection of valid actions'''
-        raise 'Not implemented'
+        raise Exception("Not Implemented")

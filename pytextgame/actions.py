@@ -10,15 +10,9 @@ class Action(object):
         # a situation is like "outdoors", "indoors", or "fighting"
         self.situation = situation
         self._game = None if situation is None else situation.game()
-
-        self.name   = name
+        # "name" is a string for the action & "suffix" is extra information. e.g. Move, North
+        self.name = name
         self.suffix = suffix
-
-    # TODO: Where is this used?
-    def set_situation(self, situation):
-        '''Set the containing situation for this action'''
-        self.situation = situation
-        self._game = situation.game()
 
     def game(self):
         '''getting the current subclass of game'''
@@ -28,7 +22,6 @@ class Action(object):
         '''placeholder: generic return a string describing this action'''
         return ''
 
-    # TODO: While swapping out GUIs/Windows, will this still be meaningful?
     def always_known(self):
         '''Is this action Always Known in this game?'''
         return False
@@ -37,13 +30,13 @@ class Action(object):
         '''Each action will have to define a method that determines
         if the action is currently valid or not.
         '''
-        raise 'Not implemented'
+        raise Exception("Not Implemented")
 
     def do(self):
         '''Each Action will have to define a method that will
         actually perform some changes to the Game or UI
         '''
-        raise 'Not implemented'
+        raise Exception("Not Implemented")
 
     def execute(self):
         '''Convience method, checks if the action can be performed,

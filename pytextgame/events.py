@@ -27,7 +27,7 @@ class Event(object):
         return self._target
 
     def description(self):
-        raise 'Not implemented'
+        raise Exception("Not Implemented")
 
     def do(self):
-        raise 'Not implemented in ' + str(self)
+        raise Exception("Not Implemented in " + str(self))

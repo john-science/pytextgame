@@ -29,7 +29,7 @@ class Game(object):
 
     def do_turn(self):
         '''The meat of the game logic will go here'''
-        raise 'Not implemented'
+        raise Exception("Not Implemented")
 
     def do_start(self):
         '''Perform initial setup of the Game and state'''
@@ -54,13 +54,13 @@ class Game(object):
         return events
 
     def set_situation(self, situation_str):
-        '''TODO'''
+        '''set the current Situation of the game'''
         self.situation = self._situations[situation_str](self)
 
     def resolve_situation(self, situation):
-        '''TODO'''
-        raise 'Not implemented'
+        '''Allow the situation to modify the game state'''
+        raise Exception("Not Implemented")
 
     def available_actions(self):
         '''Return a list of actions that are currently valid'''
-        raise 'Not implemented'
+        raise Exception("Not Implemented")
