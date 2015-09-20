@@ -2,10 +2,11 @@
 '''Create a basic text-grid screen using Pygame'''
 
 import os
-import pygame
 import sys
 import time
 from colors import *
+import pygame
+from pygame.locals import *
 from pkg_resources import resource_stream, resource_filename
 if sys.version_info[0] < 3: range = xrange
 
@@ -236,32 +237,26 @@ class Screen(object):
 
         while key is None:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return ord('Q')
-                elif event.type == pygame.KEYDOWN:
+                if event.type == QUIT:
+                    return ord('Q')  # TODO: Make this configurable
+                elif event.type == KEYDOWN:
                     # TODO: Shorten this? Map pygame.KEY_WHATEVER to CONSTANT
-                    if event.key == pygame.K_UP:
-                        key = KEY_UP  # Why not just return pygame.K_UP = 273???
-                    elif event.key == pygame.K_DOWN:
-                        key = KEY_DOWN
-                    elif event.key == pygame.K_LEFT:
-                        key = KEY_LEFT
-                    elif event.key == pygame.K_RIGHT:
-                        key = KEY_RIGHT
-                    elif event.key == pygame.K_F1:
+                    if event.key in [K_UP, K_DOWN, K_LEFT, K_RIGHT]:  # TODO: Too game-specific
+                        key = event.key
+                    elif event.key == pygame.K_F1:  # TODO: Make this configurable
                         self._font_size += 1
                         self.reset_font()
                         key = NULL_KEY
-                    elif event.key == pygame.K_F2:
+                    elif event.key == pygame.K_F2:  # TODO: Make this configurable
                         if self._font_size > 5:
                             self._font_size -= 1
                             self.reset_font()
                             key = NULL_KEY
                     elif len(event.unicode) >= 1:
                         key = ord(event.unicode)
-                elif event.type == pygame.VIDEORESIZE:
+                elif event.type == VIDEORESIZE:
                     key = NULL_KEY
-                elif event.type == pygame.KEYUP:
+                elif event.type == KEYUP:
                     key = None
 
         return key
