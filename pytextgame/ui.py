@@ -47,6 +47,7 @@ class TextGameUI(TextUI):
         TextUI.__init__(self, game.num_rows, game.num_cols, game.icon)
         self.game = game
         self._null_key = False
+        self.action_keys = {}
         self.windows = Windows()
         self.fresh_displays = {}
 
@@ -69,7 +70,7 @@ class TextGameUI(TextUI):
                 # UI-switching logic
                 if self.game.new_ui():
                     self.update_windows(self.game.new_ui())
-                    self.game._new_ui = False  # TODO: sigh... setters and getters...
+                    self.game.set_new_ui(False)
             self.game.do_turn()
             self.do_turn()
 
@@ -97,39 +98,6 @@ class TextGameUI(TextUI):
         # look for user input and perform necessary actions
         self.act()
 
-    def display(self):
-        '''display every window in this UI'''
-        # re-draw every sub-window
-        for window in self.displayed_windows():
-            window.display()
-
-        self.stdscr.refresh()
-
-    def display_last(self):
-        '''In the situation where a null input was recieved from user
-        (window resize, etc), simply re-draw the last screen
-        using the memoized data
-        '''
-        for window in self.displayed_windows():
-            window.stdscr.refresh()
-
-    def create_window(self, kind, rect, border=WHITE):
-        '''Helper method to add a subwindow to the screen'''
-        return kind(self, self.stdscr, self.game, rect, border)
-
-    def update_windows(self, display):
-        '''Update the display of all windows on the screen
-        '''
-        self.windows = Windows()
-        self.stdscr.clear()
-        for wname, wlst in self.fresh_displays[display].iteritems():
-            if len(wlst) == 2:
-                self.windows[wname] = self.create_window(wlst[0], wlst[1])
-            elif len(wlst) == 3:
-                self.windows[wname] = self.create_window(wlst[0], wlst[1], wlst[2])
-            else:
-                raise ValueError('TODO: Is there a better way? Type checking on fresh_displays?')
-
     def act(self):
         '''wait for user input and perform any actions necessary
         if a null key is returned, no actions are necessary
@@ -148,24 +116,56 @@ class TextGameUI(TextUI):
 
             self.display()
 
-            # TODO: This loop seems unnecessary... just have a dictionary of actions, right?
+            # find the string for each action and see if the key pressed is in the action_keys dict
             actions = self.game.available_actions()
             for action in actions:
                 if self.key_for(action) == key:
                     acted = action.execute()
 
-    def add_window(self, key_name, window):
-        '''Helper method to correctly build a dictionary of Windows'''
-        key_name = str(key_name)
-        if not isinstance(window, Window):
-            raise TypeError('You cannot add that, because it is not a Window.')
-
-        self.windows[key_name] = window
+    def key_for(self, action):
+        '''Determine if the key in question is for a particular action'''
+        raise Exception('Not Implemented')
 
     def displayed_windows(self):
         '''Return a list of subwindows'''
         return self.windows.values()
 
+    def add_window(self, key_name, window):
+        self.windows[key_name] = window
+
+    def create_window(self, kind, rect, border=WHITE):
+        '''Helper method to add a subwindow to the screen'''
+        return kind(self, self.stdscr, self.game, rect, border)
+
     def window(self, name):
         '''Get a window using it's name key'''
         return self.windows.get(name, None)
+
+    def update_windows(self, display):
+        '''Update the display of all windows on the screen
+        '''
+        self.windows = Windows()
+        self.stdscr.clear()
+        for wname, wlst in self.fresh_displays[display].iteritems():
+            if len(wlst) == 2:
+                self.windows[wname] = self.create_window(wlst[0], wlst[1])
+            elif len(wlst) == 3:
+                self.windows[wname] = self.create_window(wlst[0], wlst[1], wlst[2])
+            else:
+                raise ValueError('TODO: Is there a better way? Type checking on fresh_displays?')
+
+    def display(self):
+        '''display every window in this UI'''
+        # re-draw every sub-window
+        for window in self.displayed_windows():
+            window.display()
+
+        self.stdscr.refresh()
+
+    def display_last(self):
+        '''In the situation where a null input was recieved from user
+        (window resize, etc), simply re-draw the last screen
+        using the memoized data
+        '''
+        for window in self.displayed_windows():
+            window.stdscr.refresh()

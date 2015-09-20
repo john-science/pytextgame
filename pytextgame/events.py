@@ -6,9 +6,7 @@ class Event(object):
     def __init__(self, source, target):
         self._target = target
         self._source = source
-        self._game = None
-        if source is not None:
-            self._game = source.game()
+        self._game = source.game() if source is not None else None
 
     def game(self):
         '''Returns the current subclass of Game'''
