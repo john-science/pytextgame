@@ -4,6 +4,8 @@ built on pygame
 '''
 
 from pytextgame import screen
+from pytextgame.displays import Displays
+from pytextgame.actions import ActionKeys
 from pytextgame.window import Window, Windows
 from colors import WHITE
 
@@ -47,9 +49,9 @@ class TextGameUI(TextUI):
         TextUI.__init__(self, game.num_rows, game.num_cols, game.icon)
         self.game = game
         self._null_key = False
-        self.action_keys = {}
+        self.action_keys = ActionKeys()
         self.windows = Windows()
-        self.fresh_displays = {}
+        self.fresh_displays = Displays()
 
     def init(self):
         pass
@@ -64,7 +66,6 @@ class TextGameUI(TextUI):
         '''
         self.game.start()
 
-        # TODO: Along with new UI, I need to provide a new situation, which can swap out the available keys/actions.
         while True:
             if self.game.new_ui():
                 # UI-switching logic
@@ -88,8 +89,8 @@ class TextGameUI(TextUI):
 
         # render screen
         if self._null_key:
-            # if only null user input, render using memoized screen
-            self.display_last()  # TODO: Why do I have to re-render at all? Why not just let it be?
+            # if only null user input (like screen resize), render using memoized screen content
+            self.display_last()
             self._null_key = False
         else:
             # render fresh screen
@@ -130,16 +131,9 @@ class TextGameUI(TextUI):
         '''Return a list of subwindows'''
         return self.windows.values()
 
-    def add_window(self, key_name, window):
-        self.windows[key_name] = window
-
     def create_window(self, kind, rect, border=WHITE):
         '''Helper method to add a subwindow to the screen'''
         return kind(self, self.stdscr, self.game, rect, border)
-
-    def window(self, name):
-        '''Get a window using it's name key'''
-        return self.windows.get(name, None)
 
     def update_windows(self, display):
         '''Update the display of all windows on the screen
@@ -151,8 +145,6 @@ class TextGameUI(TextUI):
                 self.windows[wname] = self.create_window(wlst[0], wlst[1])
             elif len(wlst) == 3:
                 self.windows[wname] = self.create_window(wlst[0], wlst[1], wlst[2])
-            else:
-                raise ValueError('TODO: Is there a better way? Type checking on fresh_displays?')
 
     def display(self):
         '''display every window in this UI'''

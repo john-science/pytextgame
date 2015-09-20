@@ -85,6 +85,8 @@ class Windows(dict):
 
     def __setitem__(self, key, item):
         '''validator method to ensure all values are Windows'''
+        if not isinstance(key, str):
+            raise TypeError('Window keys must be strings.')
         if not isinstance(item, Window):
             raise TypeError('You cannot add that, because it is not a Window.')
 

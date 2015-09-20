@@ -86,3 +86,16 @@ class NullAction(Action):
     def do(self):
         '''Sometimes the best thing you can do is nothing.'''
         pass
+
+
+class ActionKeys(dict):
+
+    def __setitem__(self, key, value):
+        '''Simple type-checking for the Action Key Dict'''
+        if not isinstance(key, str):
+            raise TypeError('The action keys key must be a string.')
+        if not isinstance(value, int):
+            raise TypeError('The action keys value must be an integer.')
+
+        dict.__setitem__(self, key, value)
+
