@@ -57,7 +57,9 @@ class Screen(object):
         self._font = {False: {}, True: {}}
         self.reset_font()
         # special characters
-        self.quit_key = 17  # default is (Control-Q)
+        self.KEY_QUIT = 17  # default is (Control-Q)
+        self.KEY_RESIZE_UP = K_F1
+        self.KEY_RESIZE_DOWN = K_F2
 
     def _char(self, x, y):
         '''Get the char at a particular X/Y point on the display. '''
@@ -239,16 +241,16 @@ class Screen(object):
         while key is None:
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    return self.quit_key
+                    return self.KEY_QUIT
                 elif event.type == KEYDOWN:
                     # TODO: Shorten this? Map pygame.KEY_WHATEVER to CONSTANT
                     if event.key in [K_UP, K_DOWN, K_LEFT, K_RIGHT]:  # TODO: Too game-specific
                         key = event.key
-                    elif event.key == pygame.K_F1:  # TODO: Make this configurable
+                    elif event.key == self.KEY_RESIZE_UP:
                         self._font_size += 1
                         self.reset_font()
                         key = NULL_KEY
-                    elif event.key == pygame.K_F2:  # TODO: Make this configurable
+                    elif event.key == self.KEY_RESIZE_DOWN:
                         if self._font_size > 5:
                             self._font_size -= 1
                             self.reset_font()
