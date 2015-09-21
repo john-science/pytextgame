@@ -11,10 +11,7 @@ from pkg_resources import resource_stream, resource_filename
 if sys.version_info[0] < 3: range = xrange
 
 # Key Constants
-KEY_UP    = 257
-KEY_DOWN  = 258
-KEY_LEFT  = 259
-KEY_RIGHT = 260
+CONTROL_Q = 17
 NULL_KEY = 'Null Key'
 
 
@@ -59,6 +56,8 @@ class Screen(object):
         self.init_font_paths()
         self._font = {False: {}, True: {}}
         self.reset_font()
+        # special characters
+        self.quit_key = 17  # default is (Control-Q)
 
     def _char(self, x, y):
         '''Get the char at a particular X/Y point on the display. '''
@@ -186,6 +185,7 @@ class Screen(object):
         # draw each character onto the screen
         for x in range(self.width()):
             for y in range(self.height()):
+                # TODO: This block looks like it could be a method.
                 char  = self._char(x, y)
                 color = self._color(x, y)
                 is_obli, is_bold = self._font_at(x, y)
@@ -198,6 +198,7 @@ class Screen(object):
             if box is None:
                 continue
 
+            # TODO: This block looks like it could be a method.
             (x, y, width, height, color) = box
 
             px = x * self._x_font_size + self._x_font_size / 2
@@ -238,7 +239,7 @@ class Screen(object):
         while key is None:
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    return ord('Q')  # TODO: Make this configurable
+                    return self.quit_key
                 elif event.type == KEYDOWN:
                     # TODO: Shorten this? Map pygame.KEY_WHATEVER to CONSTANT
                     if event.key in [K_UP, K_DOWN, K_LEFT, K_RIGHT]:  # TODO: Too game-specific
