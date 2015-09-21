@@ -189,7 +189,6 @@ class Screen(object):
         # draw each character onto the screen
         for x in range(self.width()):
             for y in range(self.height()):
-                # TODO: This block looks like it could be a method.
                 char  = self._char(x, y)
                 color = self._color(x, y)
                 is_obli, is_bold = self._font_at(x, y)
@@ -202,16 +201,7 @@ class Screen(object):
             if box is None:
                 continue
 
-            # TODO: This block looks like it could be a method.
-            (x, y, width, height, color) = box
-
-            px = x * self._x_font_size + self._x_font_size / 2
-            py = y * self._y_font_size + self._y_font_size / 2
-            pw = width * self._x_font_size - self._x_font_size
-            ph = height * self._y_font_size - self._y_font_size
-
-            pygame.draw.rect(self.screen(), color_int2tuple(color),
-                             pygame.Rect(px, py, pw, ph), 1)
+            self._draw_box(box)
 
         # flip: send the final image to the screen
         pygame.display.flip()
@@ -236,6 +226,18 @@ class Screen(object):
         '''delete a box from the collection on the screen'''
         self._boxes[window.id()] = None
 
+    def _draw_box(self, box):
+        '''actually draw the box onto the screen right now'''
+        (x, y, width, height, color) = box
+
+        px = x * self._x_font_size + self._x_font_size / 2
+        py = y * self._y_font_size + self._y_font_size / 2
+        pw = width * self._x_font_size - self._x_font_size
+        ph = height * self._y_font_size - self._y_font_size
+
+        pygame.draw.rect(self.screen(), color_int2tuple(color),
+                         pygame.Rect(px, py, pw, ph), 1)
+
     def getch(self):
         '''get raw characters of user input'''
         key = None
@@ -248,6 +250,7 @@ class Screen(object):
                 elif event.type == KEYDOWN:
                     # here is where we parse all real keyboard inputs
                     if event.key in self.keys_non_unicode:
+                        # special keys, like arrow and function keys (configurable list)
                         key = event.key
                     elif len(event.unicode) >= 1:
                         # typical case: return a typed letter or number

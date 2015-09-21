@@ -105,8 +105,7 @@ class TextGameUI(TextUI):
         '''
         acted = False
 
-        # TODO: This and the 'screen.getch' need to be combined.
-        #       We want to allow for the GUI to change even when the user doesn't press a key.
+        # TODO: Allow for the GUI to change even when the user doesn't press a key.
         while not acted:
             key = self.get_key()
 
