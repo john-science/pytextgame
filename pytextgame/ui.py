@@ -114,6 +114,9 @@ class TextGameUI(TextUI):
             if key == screen.NULL_KEY:
                 self._null_key = True
                 return
+            elif key in [self.stdscr.key_size_up, self.stdscr.key_size_down]:
+                self.resize_window(key)
+                return
 
             self.display()
 
@@ -122,6 +125,16 @@ class TextGameUI(TextUI):
             for action in actions:
                 if self.key_for(action) == key:
                     acted = action.execute()
+
+    def resize_window(self, key):
+        '''Resize the window up or down'''
+        if key == self.stdscr.key_size_up:
+            self.stdscr._font_size += 1
+            self.stdscr.reset_font()
+        elif key == self.stdscr.key_size_down:
+            if self.stdscr._font_size > 5:
+                self.stdscr._font_size -= 1
+                self.stdscr.reset_font()
 
     def key_for(self, action):
         '''Determine if the key in question is for a particular action'''

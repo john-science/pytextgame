@@ -57,9 +57,11 @@ class Screen(object):
         self._font = {False: {}, True: {}}
         self.reset_font()
         # special characters
-        self.KEY_QUIT = 17  # default is (Control-Q)
-        self.KEY_RESIZE_UP = K_F1
-        self.KEY_RESIZE_DOWN = K_F2
+        self.key_quit = 17  # default is (Control-Q)
+        self.key_size_up = K_F1
+        self.key_size_down = K_F2
+        self.keys_non_unicode = [K_UP, K_DOWN, K_LEFT, K_RIGHT, self.key_size_up,
+                                 self.key_size_down]
 
     def _char(self, x, y):
         '''Get the char at a particular X/Y point on the display. '''
@@ -241,26 +243,18 @@ class Screen(object):
         while key is None:
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    return self.KEY_QUIT
+                    # configurable quit-game key
+                    return self.key_quit
                 elif event.type == KEYDOWN:
-                    # TODO: Shorten this? Map pygame.KEY_WHATEVER to CONSTANT
-                    if event.key in [K_UP, K_DOWN, K_LEFT, K_RIGHT]:  # TODO: Too game-specific
+                    # here is where we parse all real keyboard inputs
+                    if event.key in self.keys_non_unicode:
                         key = event.key
-                    elif event.key == self.KEY_RESIZE_UP:
-                        self._font_size += 1
-                        self.reset_font()
-                        key = NULL_KEY
-                    elif event.key == self.KEY_RESIZE_DOWN:
-                        if self._font_size > 5:
-                            self._font_size -= 1
-                            self.reset_font()
-                            key = NULL_KEY
                     elif len(event.unicode) >= 1:
+                        # typical case: return a typed letter or number
                         key = ord(event.unicode)
                 elif event.type == VIDEORESIZE:
+                    # for when a user drags the corner of the window to resize it
                     key = NULL_KEY
-                elif event.type == KEYUP:
-                    key = None
 
         return key
 
