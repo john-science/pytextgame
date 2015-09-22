@@ -67,11 +67,10 @@ class TextGameUI(TextUI):
         self.game.start()
 
         while True:
+            # UI-switching logic
             if self.game.new_ui():
-                # UI-switching logic
-                if self.game.new_ui():
-                    self.update_windows(self.game.new_ui())
-                    self.game.set_new_ui(False)
+                self.update_windows(self.game.new_ui())
+                self.game.set_new_ui(False)
             self.game.do_turn()
             self.do_turn()
 
@@ -118,7 +117,7 @@ class TextGameUI(TextUI):
                 return
 
             self.display()
-            self._act_on_key(key)
+            acted = self._act_on_key(key)
 
     def _act_on_key(self, key):
         '''execute actions based on the user's input key'''
