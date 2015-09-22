@@ -6,6 +6,7 @@ class Game(object):
     def __init__(self):
         self._situations = {}
         self.situation = None
+        self.text_entry = False
         self._new_ui = False
         self._events  = []
 
@@ -64,3 +65,9 @@ class Game(object):
     def available_actions(self):
         '''Return a list of actions that are currently valid'''
         raise Exception("Not Implemented")
+
+    def text_entry_action(self, key):
+        '''Text Entry requires a different kind of Action than a
+        normal game interaction.
+        '''
+        raise Exception('Not Implemented')

@@ -5,6 +5,7 @@ from pytextgame.geometry import Position
 from colors import WHITE
 
 
+# TODO: Need an Alter Windows, Situation, and Action (one or two buttons to close).
 class Window(object):
 
     def __init__(self, ui, stdscr, game, rect, border=WHITE):

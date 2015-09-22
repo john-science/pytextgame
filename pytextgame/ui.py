@@ -118,12 +118,23 @@ class TextGameUI(TextUI):
                 return
 
             self.display()
+            self._act_on_key(key)
 
-            # find the string for each action and see if the key pressed is in the action_keys dict
+    def _act_on_key(self, key):
+        '''execute actions based on the user's input key'''
+        acted = False
+        if self.game.text_entry:
+            # use the Game's built-in text entry functionality
+            action = self.game.text_entry_action(key)
+            acted = action.execute()
+        else:
+            # find the string for each action and see if the key is in the action_keys dict
             actions = self.game.available_actions()
             for action in actions:
                 if self.key_for(action) == key:
                     acted = action.execute()
+
+        return acted
 
     def resize_window(self, key):
         '''Resize the window up or down'''
