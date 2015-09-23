@@ -15,10 +15,6 @@ requirements = [
     # TODO: put package requirements here
 ]
 
-test_requirements = [
-    # TODO: put package test requirements here
-]
-
 setup(
     name='pytextgame',
     version='0.0.4',
@@ -26,7 +22,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author="John Stilley",
     url='https://github.com/thejollysin/pytextgame',
-    packages=find_packages(),
+    packages=['pytextgame'],
     package_data={
         'pytextgame': ['resources/*.png', 'resources/*.ttf'],
     },
@@ -44,6 +40,5 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
     ],
-    test_suite='tests',
-    tests_require=test_requirements
+    test_suite='test'
 )

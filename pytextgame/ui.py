@@ -3,6 +3,7 @@
 built on pygame
 '''
 
+import string
 from pytextgame import screen
 from pytextgame.displays import Displays
 from pytextgame.actions import ActionKeys
@@ -48,6 +49,7 @@ class TextGameUI(TextUI):
     def __init__(self, game):
         TextUI.__init__(self, game.num_rows, game.num_cols, game.icon)
         self.game = game
+        self.enterable_text = string.printable
         self._null_key = False
         self.action_keys = ActionKeys()
         self.windows = Windows()
@@ -119,6 +121,8 @@ class TextGameUI(TextUI):
             self.display()
             acted = self._act_on_key(key)
 
+    # TODO: This breaks if you hit an arrow key during text entry. Need to check if key is visible or not... perhaps check if is alphanumeric or punctuation?
+    #       I will need a configurable list of enterable characters.
     def _act_on_key(self, key):
         '''execute actions based on the user's input key'''
         acted = False
