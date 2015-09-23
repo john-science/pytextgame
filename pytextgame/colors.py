@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 '''color definitions and functions'''
 
+
 def color_int2tuple(val):
     '''convert a 9-digit integer into a RGB color tuple'''
     r = val >> 16

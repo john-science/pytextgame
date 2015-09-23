@@ -1,8 +1,9 @@
+
 import unittest
 from pytextgame.geometry import Direction, Position, Rectangle
 
 
-class TestCube(unittest.TestCase):
+class TestGeometry(unittest.TestCase):
 
     def setUp(self):
         self.pos1 = Position(5, 0)
