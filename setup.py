@@ -18,7 +18,7 @@ requirements = [
 setup(
     name='pytextgame',
     version='0.0.4',
-    description="Cross-Platform Python Text Game Library",
+    description="Cross-platform text-game engine in Python.",
     long_description=readme + '\n\n' + history,
     author="John Stilley",
     url='https://github.com/thejollysin/pytextgame',
@@ -30,7 +30,7 @@ setup(
     install_requires=requirements,
     license="MIT",
     zip_safe=False,
-    keywords='pytextgame',
+    keywords='python text game engine',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
