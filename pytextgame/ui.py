@@ -4,11 +4,13 @@ built on pygame
 '''
 
 import string
+import sys
 from pytextgame import screen
 from pytextgame.displays import Displays
 from pytextgame.actions import ActionKeys
 from pytextgame.window import Window, Windows
 from colors import WHITE
+if sys.version_info[0] < 3: chr = unichr
 
 
 class TextUI(object):
@@ -49,7 +51,8 @@ class TextGameUI(TextUI):
     def __init__(self, game):
         TextUI.__init__(self, game.num_rows, game.num_cols, game.icon)
         self.game = game
-        self.enterable_text = string.printable
+        self.printable = string.printable.translate(None, "\r\n\t\x0b\x0c")
+        self.text_entry_specials = u'\u0114\r\x08\x7f'
         self._null_key = False
         self.action_keys = ActionKeys()
         self.windows = Windows()
@@ -121,12 +124,13 @@ class TextGameUI(TextUI):
             self.display()
             acted = self._act_on_key(key)
 
-    # TODO: This breaks if you hit an arrow key during text entry. Need to check if key is visible or not... perhaps check if is alphanumeric or punctuation?
-    #       I will need a configurable list of enterable characters.
     def _act_on_key(self, key):
         '''execute actions based on the user's input key'''
         acted = False
+
         if self.game.text_entry:
+            if chr(key) not in self.printable + self.text_entry_specials:
+                return acted
             # use the Game's built-in text entry functionality
             action = self.game.text_entry_action(key)
             acted = action.execute()
