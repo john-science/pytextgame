@@ -54,6 +54,8 @@ class TextGameUI(TextUI):
         self.printable = string.printable.translate(None, "\r\n\t\x0b\x0c")
         self.text_entry_specials = u'\u0114\r\x08\x7f'
         self._null_key = False
+        self.clock = None
+        self.frame_rate = 50  # TODO: What is a good default frame rate?
         self.action_keys = ActionKeys()
         self.windows = Windows()
         self.fresh_displays = Displays()
@@ -71,13 +73,39 @@ class TextGameUI(TextUI):
         '''
         self.game.start()
 
+        self.clock = screen.Clock()
         while True:
             # UI-switching logic
             if self.game.new_ui():
                 self.update_windows(self.game.new_ui())
                 self.game.set_new_ui(False)
-            self.game.do_turn()
-            self.do_turn()
+
+            # progress the game forward one time step
+            time_passed = self.clock.tick(self.frame_rate)
+            self.game.do_turn(time_passed)
+
+            # setup information necessary to render
+            self.prepare_turn()
+
+            # TODO: Keep or through this Null Key stuff? I want to support RL and player-driven event-style games.
+            """
+            Perhaps instead of NULL_KEY, perhaps the game should send a message "needs redraw".
+            Does it help CPU usage if we only redraw when we need too? TESTED. Yes.
+            """
+            self.display()  # TODO: Should I try to block a full re-draw if the game state has not changed
+
+            # look for user input and perform necessary actions
+            key = self.get_key()
+            if key is None:
+                continue
+
+            # null key is for screen re-sizing, quiting the game, etc
+            if key == screen.NULL_KEY:
+                self._null_key = True
+            elif key in [self.stdscr.key_size_up, self.stdscr.key_size_down]:
+                self.resize_window(key)
+
+            self._act_on_key(key)
 
     def prepare_turn(self):
         '''setup whatever you need for this turn'''
@@ -109,7 +137,6 @@ class TextGameUI(TextUI):
         '''
         acted = False
 
-        # TODO: Allow for the GUI to change even when the user doesn't press a key.
         while not acted:
             key = self.get_key()
 
@@ -121,27 +148,22 @@ class TextGameUI(TextUI):
                 self.resize_window(key)
                 return
 
-            self.display()
-            acted = self._act_on_key(key)
+            self._act_on_key(key)
 
     def _act_on_key(self, key):
         '''execute actions based on the user's input key'''
-        acted = False
-
         if self.game.text_entry:
             if chr(key) not in self.printable + self.text_entry_specials:
-                return acted
+                return
             # use the Game's built-in text entry functionality
             action = self.game.text_entry_action(key)
-            acted = action.execute()
+            action.execute()
         else:
             # find the string for each action and see if the key is in the action_keys dict
             actions = self.game.available_actions()
             for action in actions:
                 if self.key_for(action) == key:
-                    acted = action.execute()
-
-        return acted
+                    action.execute()
 
     def resize_window(self, key):
         '''Resize the window up or down'''
@@ -183,6 +205,7 @@ class TextGameUI(TextUI):
             window.display()
 
         self.stdscr.refresh()
+        self.game.needs_redraw = False
 
     def display_last(self):
         '''In the situation where a null input was recieved from user
@@ -191,3 +214,5 @@ class TextGameUI(TextUI):
         '''
         for window in self.displayed_windows():
             window.stdscr.refresh()
+
+        self.game.needs_redraw = False

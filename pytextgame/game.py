@@ -7,6 +7,7 @@ class Game(object):
         self._situations = {}
         self.situation = None
         self.text_entry = False
+        self.needs_redraw = True
         self._new_ui = False
         self._events  = []
 
@@ -28,7 +29,7 @@ class Game(object):
         self.do_stop()
         self._new_ui = False
 
-    def do_turn(self):
+    def do_turn(self, time_passed=0):
         '''The meat of the game logic will go here'''
         raise Exception("Not Implemented")
 

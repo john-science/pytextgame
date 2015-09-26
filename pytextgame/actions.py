@@ -43,11 +43,9 @@ class Action(object):
         if so it does it.
         '''
         if not self.can_do():
-            return False
+            return
 
         self.do()
-
-        return True
 
     def __str__(self):
         if self.suffix is None:
