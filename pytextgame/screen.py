@@ -13,7 +13,6 @@ if sys.version_info[0] < 3: range = xrange
 
 # Key Constants
 CONTROL_Q = 17
-NULL_KEY = 'Null Key'
 
 
 def wrapper(method, num_rows, num_cols, icon):
@@ -255,32 +254,6 @@ class Screen(object):
                 elif len(event.unicode) >= 1:
                     # typical case: return a typed letter or number
                     key = ord(event.unicode)
-            elif event.type == VIDEORESIZE:
-                # for when a user drags the corner of the window to resize it
-                key = NULL_KEY
-
-        return key
-
-    def getch_original(self):
-        '''get raw characters of user input'''
-        key = None
-
-        while key is None:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    # configurable quit-game key
-                    return self.key_quit
-                elif event.type == KEYDOWN:
-                    # here is where we parse all real keyboard inputs
-                    if event.key in self.keys_non_unicode:
-                        # special keys, like arrow and function keys (configurable list)
-                        key = event.key
-                    elif len(event.unicode) >= 1:
-                        # typical case: return a typed letter or number
-                        key = ord(event.unicode)
-                elif event.type == VIDEORESIZE:
-                    # for when a user drags the corner of the window to resize it
-                    key = NULL_KEY
 
         return key
 

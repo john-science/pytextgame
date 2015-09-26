@@ -53,9 +53,8 @@ class TextGameUI(TextUI):
         self.game = game
         self.printable = string.printable.translate(None, "\r\n\t\x0b\x0c")
         self.text_entry_specials = u'\u0114\r\x08\x7f'
-        self._null_key = False
         self.clock = None
-        self.frame_rate = 50  # TODO: What is a good default frame rate?
+        self.frame_rate = 30
         self.action_keys = ActionKeys()
         self.windows = Windows()
         self.fresh_displays = Displays()
@@ -87,12 +86,11 @@ class TextGameUI(TextUI):
             # setup information necessary to render
             self.prepare_turn()
 
-            # TODO: Keep or through this Null Key stuff? I want to support RL and player-driven event-style games.
-            """
-            Perhaps instead of NULL_KEY, perhaps the game should send a message "needs redraw".
-            Does it help CPU usage if we only redraw when we need too? TESTED. Yes.
-            """
-            self.display()  # TODO: Should I try to block a full re-draw if the game state has not changed
+            '''
+            TODO: I would like to block the re-fresh of the display window if there was no change
+                  to the game state (or window/font resize). Add a "needs_redraw" attr to Game.
+            '''
+            self.display()
 
             # look for user input and perform necessary actions
             key = self.get_key()
@@ -100,55 +98,14 @@ class TextGameUI(TextUI):
                 continue
 
             # null key is for screen re-sizing, quiting the game, etc
-            if key == screen.NULL_KEY:
-                self._null_key = True
-            elif key in [self.stdscr.key_size_up, self.stdscr.key_size_down]:
+            if key in [self.stdscr.key_size_up, self.stdscr.key_size_down]:
                 self.resize_window(key)
-
-            self._act_on_key(key)
+            else:
+                self._act_on_key(key)
 
     def prepare_turn(self):
         '''setup whatever you need for this turn'''
         raise Exception("Not Implemented")
-
-    def do_turn(self):
-        '''Do a single turn of render-input
-        Allow to render using memoized data from last pull,
-        if no user-input is given.
-        '''
-        # setup information necessary to render
-        self.prepare_turn()
-
-        # render screen
-        if self._null_key:
-            # if only null user input (like screen resize), render using memoized screen content
-            self.display_last()
-            self._null_key = False
-        else:
-            # render fresh screen
-            self.display()
-
-        # look for user input and perform necessary actions
-        self.act()
-
-    def act(self):
-        '''wait for user input and perform any actions necessary
-        if a null key is returned, no actions are necessary
-        '''
-        acted = False
-
-        while not acted:
-            key = self.get_key()
-
-            # null key is for screen re-sizing, quiting the game, etc
-            if key == screen.NULL_KEY:
-                self._null_key = True
-                return
-            elif key in [self.stdscr.key_size_up, self.stdscr.key_size_down]:
-                self.resize_window(key)
-                return
-
-            self._act_on_key(key)
 
     def _act_on_key(self, key):
         '''execute actions based on the user's input key'''
