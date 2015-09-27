@@ -4,9 +4,11 @@
 class Event(object):
 
     def __init__(self, source, target):
+        '''Provide a Situation and a Unit for the event to occur in/to.'''
+        # target is usually a subclass of Unit
         self._target = target
+        # source can be anything that includes a reference to the game object (like a Situation)
         self._source = source
-        # _game could also be anything that includes a reference to the game object
         self._game = source.game() if source is not None else None
 
     def game(self):

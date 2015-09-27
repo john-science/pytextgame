@@ -86,10 +86,7 @@ class TextGameUI(TextUI):
             # setup information necessary to render
             self.prepare_turn()
 
-            '''
-            TODO: I would like to block the re-fresh of the display window if there was no change
-                  to the game state (or window/font resize). Add a "needs_redraw" attr to Game.
-            '''
+            # draw the screen
             self.display()
 
             # look for user input and perform necessary actions
@@ -157,6 +154,10 @@ class TextGameUI(TextUI):
 
     def display(self):
         '''display every window in this UI'''
+        # hook: don't redraw screen unless you need to
+        if not self.game.needs_redraw:
+            return
+
         # re-draw every sub-window
         for window in self.displayed_windows():
             window.display()
