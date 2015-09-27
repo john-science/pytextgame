@@ -124,10 +124,12 @@ class TextGameUI(TextUI):
         if key == self.stdscr.key_size_up:
             self.stdscr._font_size += 1
             self.stdscr.reset_font()
+            self.game.set_redraw(True)
         elif key == self.stdscr.key_size_down:
             if self.stdscr._font_size > 5:
                 self.stdscr._font_size -= 1
                 self.stdscr.reset_font()
+                self.game.set_redraw(True)
 
     def key_for(self, action):
         '''Determine if the key in question is for a particular action'''
@@ -155,7 +157,7 @@ class TextGameUI(TextUI):
     def display(self):
         '''display every window in this UI'''
         # hook: don't redraw screen unless you need to
-        if not self.game.needs_redraw:
+        if not self.game.redraw():
             return
 
         # re-draw every sub-window
@@ -163,7 +165,7 @@ class TextGameUI(TextUI):
             window.display()
 
         self.stdscr.refresh()
-        self.game.needs_redraw = False
+        self.game.set_redraw(False)
 
     def display_last(self):
         '''In the situation where a null input was recieved from user
@@ -173,4 +175,4 @@ class TextGameUI(TextUI):
         for window in self.displayed_windows():
             window.stdscr.refresh()
 
-        self.game.needs_redraw = False
+        self.game.set_redraw(False)

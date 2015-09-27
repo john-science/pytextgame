@@ -7,7 +7,7 @@ class Game(object):
         self._situations = {}
         self.situation = None
         self.text_entry = False
-        self.needs_redraw = True
+        self._redraw = True
         self._new_ui = False
         self._events  = []
 
@@ -18,6 +18,16 @@ class Game(object):
     def set_new_ui(self, ui_str):
         '''Setter for new UI representative string'''
         self._new_ui = ui_str
+
+    def set_redraw(self, needs_redraw):
+        '''This sets the hook attribute: if the game state changes in a
+        way that is visible on the screen, you will want to redraw the screen.
+        '''
+        self._redraw = needs_redraw
+
+    def redraw(self):
+        '''getter for the redraw attribute"'''
+        return self._redraw
 
     def start(self):
         '''Start the game'''
