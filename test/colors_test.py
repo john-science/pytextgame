@@ -7,9 +7,6 @@ TEST_RED = 16711680
 
 class TestColors(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
     def test_int2tuple_black(self):
         self.assertEqual(color_int2tuple(0), (0, 0, 0))
 

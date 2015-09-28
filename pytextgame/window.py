@@ -82,6 +82,10 @@ class Window(object):
 
 
 class Windows(dict):
+    '''Windows is a simple dictionary of names (string keys) mapped to
+    Windows that define the current display of the game.
+    There is some light type-checking done.
+    '''
 
     def __setitem__(self, key, item):
         '''validator method to ensure all values are Windows'''
