@@ -43,7 +43,7 @@ class Screen(object):
         self._bgcolor = (0, 0, 0)
         self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
-        self.set_repeat(150, 50)
+        self.set_repeat(200, 100)
         # set icon and THEN start pygame display (which we do when we set the font)
         if icon is not None:
             self.set_icon(icon)
@@ -192,7 +192,7 @@ class Screen(object):
                 char  = self._char(x, y)
                 color = self._color(x, y)
                 is_obli, is_bold = self._font_at(x, y)
-                text  = self.font(is_obli, is_bold).render(char, True, color)
+                text  = self.font(is_obli, is_bold).render(char, True, color)  # TODO: add bg color?
                 # blit: display one image over another
                 self.screen().blit(text, self._rect(x, y))
 
