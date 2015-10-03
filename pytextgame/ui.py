@@ -50,11 +50,14 @@ class TextGameUI(TextUI):
 
     def __init__(self, game):
         TextUI.__init__(self, game.num_rows, game.num_cols, game.icon)
-        self.game = game
+        # key-entry constants
         self.printable = string.printable.translate(None, "\r\n\t\x0b\x0c")
         self.text_entry_specials = u'\u0114\r\x08\x7f'
-        self.clock = None
-        self.frame_rate = 30
+        # important attributes
+        self._game = game
+        self._frame_rate = 30
+        self._clock = None
+        # dictionary-like containers for UI elements
         self.action_keys = ActionKeys()
         self.windows = Windows()
         self.displays = Displays()
@@ -62,26 +65,48 @@ class TextGameUI(TextUI):
     def init(self):
         pass
 
+    def frame_rate(self):
+        '''Getter: the frame rate in hertz'''
+        return self._frame_rate
+
+    def set_frame_rate(self, rate):
+        '''Setter: the frame rate in hertz'''
+        self._frame_rate = rate
+
+    def clock_start(self):
+        '''Create a new clock object, with a zero start time'''
+        self._clock = screen.Clock()
+
+    def clock_tick(self):
+        '''wait until at least the frame rate time has passed, and return the time
+        since the last tick.
+        '''
+        return self._clock.tick(self.frame_rate())
+
     def run(self):
         '''just filling the superclasses method with game logic'''
         self.do_game()
+
+    def game(self):
+        '''Getter: the game this UI is supporting'''
+        return self._game
 
     def do_game(self):
         '''master method to handle rendering displaying,
         modifying game state, and handling user input
         '''
-        self.game.start()
+        self.game().start()
 
-        self.clock = screen.Clock()
+        self.clock_start()
         while True:
             # UI-switching logic
-            if self.game.new_ui():
-                self.update_windows(self.game.new_ui())
-                self.game.set_new_ui(False)
+            if self.game().new_ui():
+                self.update_windows(self.game().new_ui())
+                self.game().set_new_ui(False)
 
             # progress the game forward one time step
-            time_passed = self.clock.tick(self.frame_rate)
-            self.game.do_turn(time_passed)
+            time_passed = self.clock_tick()
+            self.game().do_turn(time_passed)
 
             # setup information necessary to render
             self.prepare_turn()
@@ -106,15 +131,15 @@ class TextGameUI(TextUI):
 
     def _act_on_key(self, key):
         '''execute actions based on the user's input key'''
-        if self.game.text_entry:
+        if self.game().text_entry:
             if chr(key) not in self.printable + self.text_entry_specials:
                 return
             # use the Game's built-in text entry functionality
-            action = self.game.text_entry_action(key)
+            action = self.game().text_entry_action(key)
             action.execute()
         else:
             # find the string for each action and see if the key is in the action_keys dict
-            actions = self.game.available_actions()
+            actions = self.game().available_actions()
             for action in actions:
                 if self.key_for(action) == key:
                     action.execute()
@@ -124,12 +149,12 @@ class TextGameUI(TextUI):
         if key == self.stdscr.key_size_up:
             self.stdscr._font_size += 1
             self.stdscr.reset_font()
-            self.game.set_redraw(True)
+            self.game().set_redraw(True)
         elif key == self.stdscr.key_size_down:
             if self.stdscr._font_size > 5:
                 self.stdscr._font_size -= 1
                 self.stdscr.reset_font()
-                self.game.set_redraw(True)
+                self.game().set_redraw(True)
 
     def key_for(self, action):
         '''Determine if the key in question is for a particular action'''
@@ -141,7 +166,7 @@ class TextGameUI(TextUI):
 
     def create_window(self, kind, rect, border_type, border_color):
         '''Helper method to add a subwindow to the screen'''
-        return kind(self, self.stdscr, self.game, rect, border_type, border_color)
+        return kind(self, self.stdscr, self.game(), rect, border_type, border_color)
 
     def update_windows(self, display):
         '''Update the display of all windows on the screen
@@ -154,7 +179,7 @@ class TextGameUI(TextUI):
     def display(self):
         '''display every window in this UI'''
         # hook: don't redraw screen unless you need to
-        if not self.game.redraw():
+        if not self.game().redraw():
             return
 
         # re-draw every sub-window
@@ -162,7 +187,7 @@ class TextGameUI(TextUI):
             window.display()
 
         self.stdscr.refresh()
-        self.game.set_redraw(False)
+        self.game().set_redraw(False)
 
     def display_last(self):
         '''In the situation where a null input was recieved from user
@@ -172,4 +197,4 @@ class TextGameUI(TextUI):
         for window in self.displayed_windows():
             window.stdscr.refresh()
 
-        self.game.set_redraw(False)
+        self.game().set_redraw(False)

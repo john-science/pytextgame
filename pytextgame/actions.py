@@ -8,15 +8,29 @@ class Action(object):
     def __init__(self, situation, name, suffix=None):
         '''Actions subclass nothing, but require situations to hold them'''
         # a situation is like "outdoors", "indoors", or "fighting"
-        self.situation = situation
+        self._situation = situation
         self._game = None if situation is None else situation.game()
         # "name" is a string for the action & "suffix" is extra information. e.g. Move, North
-        self.name = name
-        self.suffix = suffix
+        self._name = name
+        self._suffix = suffix
+
+    def name(self):
+        '''getting the name of this action'''
+        return self._name
+
+    def suffix(self):
+        '''getting the suffix of this action name
+        (e.g. "Move" might be the name, and "West" might be the suffix.)
+        '''
+        return self._suffix
 
     def game(self):
         '''getting the current subclass of game'''
         return self._game
+
+    def situation(self):
+        '''getting the situation this action is related to'''
+        return self._situation
 
     def info(self):
         '''placeholder: generic return a string describing this action'''
@@ -48,10 +62,10 @@ class Action(object):
         self.do()
 
     def __str__(self):
-        if self.suffix is None:
-            return self.name
+        if self.suffix() is None:
+            return self.name()
 
-        return '%s: %s' % (self.name, self.suffix)
+        return '%s: %s' % (self.name(), self.suffix())
 
 
 class QuitAction(Action):

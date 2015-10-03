@@ -5,11 +5,19 @@ class Game(object):
 
     def __init__(self):
         self._situations = {}
-        self.situation = None
-        self.text_entry = False
+        self._situation = None
+        self._text_entry = False
         self._redraw = True
         self._new_ui = False
         self._events  = []
+
+    def text_entry(self):
+        '''getter: Are we in a text entry game state?'''
+        return self._text_entry
+
+    def set_set_entry(self, boolean):
+        '''setter: Are we in a text entry game state?'''
+        self._text_entry = boolean
 
     def new_ui(self):
         '''returns False or a string keyword for the new UI'''
@@ -64,6 +72,10 @@ class Game(object):
         self._events = []
 
         return events
+
+    def situation(self):
+        '''get the current Situation of the game'''
+        return self._situation
 
     def set_situation(self, situation_str):
         '''set the current Situation of the game'''
