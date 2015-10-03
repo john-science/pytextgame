@@ -16,6 +16,50 @@ def color_tuple2int(tup):
     return (tup[0] << 16) + (tup[1] << 8) + tup[2]
 
 
+def color_lighten_int(num, percent=25):
+    '''Lighten a color (integer) by a certain percentage'''
+    fraction = percent / 100.0
+    r, g, b = color_int2tuple(num)
+    r += int((255 - r) * fraction)
+    g += int((255 - g) * fraction)
+    b += int((255 - b) * fraction)
+
+    return color_tuple2int((r, g, b))
+
+
+def color_lighten_tuple(tup, percent=25):
+    '''Lighten a color (RGB tuple) by a certain percentage'''
+    fraction = percent / 100.0
+    r, g, b = tup
+    r += int((255 - r) * fraction)
+    g += int((255 - g) * fraction)
+    b += int((255 - b) * fraction)
+
+    return (r, g, b)
+
+
+def color_darken_int(num, percent=25):
+    '''Darken a color (integer) by a certain percentage'''
+    fraction = percent / 100.0
+    r, g, b = color_int2tuple(num)
+    r -= int(r * fraction)
+    g -= int(g * fraction)
+    b -= int(b * fraction)
+
+    return color_tuple2int((r, g, b))
+
+
+def color_darken_tuple(tup, percent=25):
+    '''Darken a color (RGB tuple) by a certain percentage'''
+    fraction = percent / 100.0
+    r, g, b = tup
+    r -= int(r * fraction)
+    g -= int(g * fraction)
+    b -= int(b * fraction)
+
+    return (r, g, b)
+
+
 BLACK   = 0
 BLUE    = 255
 BRICK   = 10249759

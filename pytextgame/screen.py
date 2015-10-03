@@ -40,8 +40,8 @@ class Screen(object):
         self._id = 0
         self._height = height
         self._width  = width
-        self._bgcolor = (0, 0, 0)
-        self._chars = [[(' ', 0, False, False) for y in range(height)] for x in range(width)]
+        self._default_bgcolor = (0, 0, 0)  # TODO: USE THIS AS DEFAULT, SO GAME CAN RESET IT
+        self._chars = [[(' ', 0, 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
         self.set_repeat(200, 100)
         # set icon and THEN start pygame display (which we do when we set the font)
@@ -73,10 +73,16 @@ class Screen(object):
         '''
         return color_int2tuple(self._chars[x][y][1])
 
+    def _bgcolor(self, x, y):
+        '''Get the background color at a particular X/Y point on the display.
+        And convert the integer you get to an RGB tuple.
+        '''
+        return color_int2tuple(self._chars[x][y][2])
+
     def _font_at(self, x, y):
         '''Get the font at a particular X/Y point on the display.
         '''
-        return self._chars[x][y][2], self._chars[x][y][3]
+        return self._chars[x][y][3], self._chars[x][y][4]
 
     def _rect(self, x, y):
         '''Given the X/Y coordinate of the character on the screen, create
@@ -163,36 +169,41 @@ class Screen(object):
         self._screen = pygame.display.set_mode((x * self._width, y * self._height),
                                                pygame.RESIZABLE)
 
-    def subwin(self, height, width, y, x, color=WHITE):
+    def subwin(self, height, width, y, x, color=WHITE, bgcolor=BLACK):
         '''Add the bounding box frame for a given bounding box
         And then return a related sub-window'''
         self._id += 1
         self._boxes[self._id] = None
 
-        return SubWin(self, self._id, height, width, y, x, color)
+        return SubWin(self, self._id, height, width, y, x, color, bgcolor)
 
-    def addstr(self, y, x, text, color=WHITE, is_obli=False, is_bold=False):
+    def addstr(self, y, x, text, color=WHITE, bgcolor=None, is_obli=False, is_bold=False):
         '''Add a string to the 2D window character list,
         given an X-position, Y-position, string, and color
         '''
-        dx = 0
+        # use the default background color
+        if bgcolor is None:
+            #bgcolor = self._bgcolor
+            bgcolor = color_tuple2int(self._default_bgcolor)  # TODO: This default should come from 'self'
 
+        dx = 0
         for c in text:
-            self._chars[x + dx][y] = (c, color, is_obli, is_bold)
+            self._chars[x + dx][y] = (c, color, bgcolor, is_obli, is_bold)
             dx += 1
 
     def refresh(self):
         '''clear the screen and then fill it with color characters'''
         # clear the screen
-        self.screen().fill(self._bgcolor)
+        self.screen().fill(self._default_bgcolor)
 
         # draw each character onto the screen
         for x in range(self.width()):
             for y in range(self.height()):
                 char  = self._char(x, y)
                 color = self._color(x, y)
+                bgcolor = self._bgcolor(x, y)
                 is_obli, is_bold = self._font_at(x, y)
-                text  = self.font(is_obli, is_bold).render(char, True, color)  # TODO: add bg color?
+                text  = self.font(is_obli, is_bold).render(char, True, color, bgcolor)
                 # blit: display one image over another
                 self.screen().blit(text, self._rect(x, y))
 
@@ -212,7 +223,7 @@ class Screen(object):
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', BLACK)
+                self.addstr(y, x, ' ', BLACK, BLACK)
 
     def box(self):
         '''put a box around this whole screen (could be a window)'''
@@ -224,8 +235,9 @@ class Screen(object):
 
     def del_box(self, window):
         '''delete a box from the collection on the screen'''
-        self._boxes[window.id()] = None
+        self._boxes[window.id()] = None  # TODO: Not del?
 
+    # TODO: What if I want to draw a box of solid color squares, not lines? Background color?
     def _draw_box(self, box):
         '''actually draw the box onto the screen right now'''
         (x, y, width, height, color) = box
@@ -235,8 +247,7 @@ class Screen(object):
         pw = width * self._x_font_size - self._x_font_size
         ph = height * self._y_font_size - self._y_font_size
 
-        pygame.draw.rect(self.screen(), color_int2tuple(color),
-                         pygame.Rect(px, py, pw, ph), 1)
+        pygame.draw.rect(self.screen(), color_int2tuple(color), pygame.Rect(px, py, pw, ph), 1)
 
     def getch(self):
         '''get raw characters of user input'''
@@ -271,25 +282,26 @@ class Screen(object):
         '''Open the API to allow for control over key repeat speed'''
         pygame.key.set_repeat(delay, interval)
 
-    def set_bgcolor(self, tup):
+    def set_default_bgcolor(self, tup):
         '''Public background color setter method'''
-        self._bgcolor = tup
+        self._default_bgcolor = tup
 
-    def bgcolor(self):
+    def default_bgcolor(self):
         '''Public background color getter method'''
-        return self._bgcolor
+        return self._default_bgcolor
 
 
 class SubWin(object):
 
-    def __init__(self, stdscr, id, height, width, y, x, color=WHITE):
-        self._stdscr = stdscr
-        self._id     = id
-        self._x      = x
-        self._y      = y
-        self._width  = width
-        self._height = height
-        self._color  = color
+    def __init__(self, stdscr, id, height, width, y, x, color=WHITE, bgcolor=WHITE):
+        self._stdscr  = stdscr
+        self._id      = id
+        self._x       = x
+        self._y       = y
+        self._width   = width
+        self._height  = height
+        self._color   = color
+        self._bgcolor = bgcolor
 
     def stdscr(self):
         '''A reference to the container screen for this subwindow'''
@@ -319,18 +331,22 @@ class SubWin(object):
         '''An integer representing the color of the subwindow'''
         return self._color
 
+    def bgcolor(self):
+        '''An integer representing the background color of the subwindow'''
+        return self._bgcolor
+
     def clear(self):
         '''replace every character in the subwindow with a blank'''
         self.stdscr().del_box(self)
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', BLACK)
+                self.addstr(y, x, ' ', BLACK, BLACK)
 
     def box(self):
         '''Add a bounding box for this subwindow to the main screen'''
         self.stdscr().add_box(self)
 
-    def addstr(self, y, x, text, color=WHITE, is_obli=False, is_bold=False):
+    def addstr(self, y, x, text, color=None, bgcolor=None, is_obli=False, is_bold=False):
         '''Add a string to the subwindow, at X/Y, and give the color'''
-        self.stdscr().addstr(y + self.y(), x + self.x(), text, color, is_obli, is_bold)
+        self.stdscr().addstr(y + self.y(), x + self.x(), text, color, bgcolor, is_obli, is_bold)

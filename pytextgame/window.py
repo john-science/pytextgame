@@ -2,11 +2,18 @@
 '''A window is a subsection of the charcter grid on the program screen'''
 
 from pytextgame.geometry import Position
-from colors import WHITE
+from colors import WHITE, BLACK
+import sys
+if sys.version_info[0] < 3: range = xrange
+
+# TODO: solid border HAS to reduce the size of the window, just like a line border!
+LINE_BORDER = 1
+SOLID_BORDER = 2
 
 
 class Window(object):
 
+    # TODO: "line_border" vs "solid_border", THEN border color
     def __init__(self, ui, stdscr, game, rect, border=WHITE):
         self.ui = ui
         self.stdscr = stdscr
@@ -14,17 +21,30 @@ class Window(object):
         self.rect = rect
         self.border = border
         self.has_border = True if border > -1 else False
-        if self.has_border:
-            self.window = stdscr.subwin(rect.height, rect.width, rect.y, rect.x, border)
-        else:
-            self.window = stdscr.subwin(rect.height, rect.width, rect.y, rect.x)
+        self.window = stdscr.subwin(rect.height, rect.width, rect.y, rect.x, border)
+
+    def draw_solid_border(self, color):
+        '''Instead of drawing a line box, simply fill in the border tiles with solid colors.'''
+        # draw horizontal borders
+        for col in range(self.rect.width):
+            # draw top border
+            self.write(Position(col, 0), ' ', color, color)
+            # draw bottom border
+            self.write(Position(col, self.rect.height - 1), ' ', color, color)
+
+        # draw vertical borders
+        for row in range(1, self.rect.height - 1):
+            # draw left border
+            self.write(Position(0, row), ' ', color, color)
+            # draw right border
+            self.write(Position(self.rect.width - 1, row), ' ', color, color)
 
     def change_border_color(self, color):
         '''Helper method so that the color of the border of the window box
         can be changed on the fly.
         '''
         self.stdscr.del_box(self.window)
-        self.window._color = color
+        self.window._color = color          # TODO: Need to add setters and getters?
         self.stdscr.add_box(self.window)
 
     def can_write(self, pos, string=' '):
@@ -43,7 +63,7 @@ class Window(object):
 
         return True
 
-    def write(self, pos, string, color, is_obli=False, is_bold=False):
+    def write(self, pos, string, color, bgcolor=None, is_obli=False, is_bold=False):
         '''Write text into a window, provided you have a position
         and some attributes (colors, font style)
         '''
@@ -51,7 +71,7 @@ class Window(object):
             return
 
         if pos.x < 0:
-            self.write(Position(0, pos.y), string[abs(pos.x):], color, is_obli, is_bold)
+            self.write(Position(0, pos.y), string[abs(pos.x):], color, bgcolor, is_obli, is_bold)
             return
 
         max_len = self.rect.width - pos.x - self.has_border * 2
@@ -62,7 +82,7 @@ class Window(object):
         x = pos.x + self.has_border
         y = pos.y + self.has_border
 
-        self.window.addstr(y, x, string, color, is_obli, is_bold)
+        self.window.addstr(y, x, string, color, bgcolor, is_obli, is_bold)
 
     def clear(self):
         '''Empty the content of the current sub-window'''
