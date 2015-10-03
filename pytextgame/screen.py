@@ -40,7 +40,7 @@ class Screen(object):
         self._id = 0
         self._height = height
         self._width  = width
-        self._default_bgcolor = (0, 0, 0)  # TODO: USE THIS AS DEFAULT, SO GAME CAN RESET IT
+        self._default_bgcolor = BLACK
         self._chars = [[(' ', 0, 0, False, False) for y in range(height)] for x in range(width)]
         self._boxes = {0: None}
         self.set_repeat(200, 100)
@@ -62,6 +62,22 @@ class Screen(object):
         self.key_size_down = K_F2
         self.keys_non_unicode = [K_UP, K_DOWN, K_LEFT, K_RIGHT, self.key_size_up,
                                  self.key_size_down]
+
+    def bgcolor(self):
+        '''retrieve the default background color (as an integer)'''
+        return self._default_bgcolor
+
+    def bgcolor_tuple(self):
+        '''retrieve the default background color (as a tuple)'''
+        return color_int2tuple(self._default_bgcolor)
+
+    def set_bgcolor(self, color):
+        '''set the default background color (as an integer)'''
+        if type(color) == int:
+            self._default_bgcolor = color
+        else:
+            # assume it must be a tuple
+            self._default_bgcolor = color_tuple2int(color)
 
     def _char(self, x, y):
         '''Get the char at a particular X/Y point on the display. '''
@@ -169,21 +185,20 @@ class Screen(object):
         self._screen = pygame.display.set_mode((x * self._width, y * self._height),
                                                pygame.RESIZABLE)
 
-    def subwin(self, height, width, y, x, color=WHITE, bgcolor=BLACK):
+    def subwin(self, height, width, y, x, color=WHITE):
         '''Add the bounding box frame for a given bounding box
         And then return a related sub-window'''
         self._id += 1
         self._boxes[self._id] = None
 
-        return SubWin(self, self._id, height, width, y, x, color, bgcolor)
+        return SubWin(self, self._id, height, width, y, x, color)
 
     def addstr(self, y, x, text, color=WHITE, bgcolor=None, is_obli=False, is_bold=False):
         '''Add a string to the 2D window character list,
         given an X-position, Y-position, string, and color
         '''
-        # use the default background color
         if bgcolor is None:
-            bgcolor = color_tuple2int(self._default_bgcolor)  # TODO: This default should come from 'self'
+            bgcolor = self.bgcolor()
 
         dx = 0
         for c in text:
@@ -193,7 +208,7 @@ class Screen(object):
     def refresh(self):
         '''clear the screen and then fill it with color characters'''
         # clear the screen
-        self.screen().fill(self._default_bgcolor)
+        self.screen().fill(self.bgcolor_tuple())
 
         # draw each character onto the screen
         for x in range(self.width()):
@@ -219,10 +234,11 @@ class Screen(object):
     def clear(self):
         '''wipe out the boxes and empty the contents of all subwindows'''
         self._boxes = {0: None}
+        bgcolor = self.bgcolor()
 
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', BLACK, BLACK)
+                self.addstr(y, x, ' ', bgcolor, bgcolor)
 
     def box(self):
         '''put a box around this whole screen (could be a window)'''
@@ -234,9 +250,8 @@ class Screen(object):
 
     def del_box(self, window):
         '''delete a box from the collection on the screen'''
-        self._boxes[window.id()] = None  # TODO: Not del?
+        self._boxes[window.id()] = None
 
-    # TODO: What if I want to draw a box of solid color squares, not lines? Background color?
     def _draw_box(self, box):
         '''actually draw the box onto the screen right now'''
         (x, y, width, height, color) = box
@@ -281,18 +296,10 @@ class Screen(object):
         '''Open the API to allow for control over key repeat speed'''
         pygame.key.set_repeat(delay, interval)
 
-    def set_default_bgcolor(self, tup):
-        '''Public background color setter method'''
-        self._default_bgcolor = tup
-
-    def default_bgcolor(self):
-        '''Public background color getter method'''
-        return self._default_bgcolor
-
 
 class SubWin(object):
 
-    def __init__(self, stdscr, id, height, width, y, x, color=WHITE, bgcolor=WHITE):  # TODO: bg color useless here?
+    def __init__(self, stdscr, id, height, width, y, x, color=WHITE):
         self._stdscr  = stdscr
         self._id      = id
         self._x       = x
@@ -300,7 +307,6 @@ class SubWin(object):
         self._width   = width
         self._height  = height
         self._color   = color
-        self._bgcolor = bgcolor
 
     def stdscr(self):
         '''A reference to the container screen for this subwindow'''
@@ -330,17 +336,15 @@ class SubWin(object):
         '''An integer representing the color of the subwindow'''
         return self._color
 
-    def bgcolor(self):
-        '''An integer representing the background color of the subwindow'''
-        return self._bgcolor
-
     def clear(self):
         '''replace every character in the subwindow with a blank'''
         self.stdscr().del_box(self)
 
+        bgcolor = self.stdscr().bgcolor()
+
         for x in range(self.width()):
             for y in range(self.height()):
-                self.addstr(y, x, ' ', BLACK, BLACK)
+                self.addstr(y, x, ' ', bgcolor, bgcolor)
 
     def box(self):
         '''Add a bounding box for this subwindow to the main screen'''

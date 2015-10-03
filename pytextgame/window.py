@@ -30,21 +30,23 @@ class Window(object):
         '''
         self.has_border =  True if self.border_type in [LINE_BORDER, SOLID_BORDER] else False
 
-    def draw_solid_border(self, color):
+    def draw_solid_border(self):
         '''Instead of drawing a line box, simply fill in the border tiles with solid colors.'''
+        c = self.border_color
+
         # draw horizontal borders
         for col in range(self.rect.width):
             # draw top border
-            self.window.addstr(0, col, ' ', color, color, False, False)
+            self.window.addstr(0, col, ' ', c, c, False, False)
             # draw bottom border
-            self.window.addstr(self.rect.height - 1, col, ' ', color, color, False, False)
+            self.window.addstr(self.rect.height - 1, col, ' ', c, c, False, False)
 
         # draw vertical borders
         for row in range(1, self.rect.height - 1):
             # draw left border
-            self.window.addstr(row, 0, ' ', color, color, False, False)
+            self.window.addstr(row, 0, ' ', c, c, False, False)
             # draw right border
-            self.window.addstr(row, self.rect.width - 1, ' ', color, color, False, False)
+            self.window.addstr(row, self.rect.width - 1, ' ', c, c, False, False)
 
     def change_border_color(self, color):  # TODO: Silly method name?
         '''Helper method so that the color of the border of the window box
@@ -56,7 +58,7 @@ class Window(object):
             self.window._color = color          # TODO: Need to add setters and getters?
             self.stdscr.add_box(self.window)
         else:
-            self.draw_solid_border(self.border_color)
+            self.draw_solid_border()
 
     def can_write(self, pos, string=' '):
         '''Verify that you can draw the string (usually a single
@@ -104,7 +106,7 @@ class Window(object):
             if self.border_type == LINE_BORDER:
                 self.window.box()
             else:
-                self.draw_solid_border(self.border_color)  # TODO: Do I just need to re-write 'draw_solid_border'?
+                self.draw_solid_border()
 
     def refresh(self):
         '''Refresh the subwindow, using it's own subwindow method.
