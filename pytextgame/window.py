@@ -6,46 +6,57 @@ from colors import WHITE, BLACK
 import sys
 if sys.version_info[0] < 3: range = xrange
 
-# TODO: solid border HAS to reduce the size of the window, just like a line border!
+# border type constants
 LINE_BORDER = 1
 SOLID_BORDER = 2
 
 
 class Window(object):
 
-    # TODO: "line_border" vs "solid_border", THEN border color
-    def __init__(self, ui, stdscr, game, rect, border=WHITE):
+    def __init__(self, ui, stdscr, game, rect, border_type=LINE_BORDER, border_color=WHITE):
         self.ui = ui
         self.stdscr = stdscr
         self.game = game
         self.rect = rect
-        self.border = border
-        self.has_border = True if border > -1 else False
-        self.window = stdscr.subwin(rect.height, rect.width, rect.y, rect.x, border)
+        self.border_type = border_type
+        self.border_color = border_color
+        self.has_border = True
+        self.check_for_border()
+        self.window = stdscr.subwin(rect.height, rect.width, rect.y, rect.x, border_color)
+
+    def check_for_border(self):
+        '''Check to see if the border is either line or solid type.
+        If not, the window has no border.
+        '''
+        self.has_border =  True if self.border_type in [LINE_BORDER, SOLID_BORDER] else False
 
     def draw_solid_border(self, color):
         '''Instead of drawing a line box, simply fill in the border tiles with solid colors.'''
         # draw horizontal borders
         for col in range(self.rect.width):
             # draw top border
-            self.write(Position(col, 0), ' ', color, color)
+            self.window.addstr(0, col, ' ', color, color, False, False)
             # draw bottom border
-            self.write(Position(col, self.rect.height - 1), ' ', color, color)
+            self.window.addstr(self.rect.height - 1, col, ' ', color, color, False, False)
 
         # draw vertical borders
         for row in range(1, self.rect.height - 1):
             # draw left border
-            self.write(Position(0, row), ' ', color, color)
+            self.window.addstr(row, 0, ' ', color, color, False, False)
             # draw right border
-            self.write(Position(self.rect.width - 1, row), ' ', color, color)
+            self.window.addstr(row, self.rect.width - 1, ' ', color, color, False, False)
 
-    def change_border_color(self, color):
+    def change_border_color(self, color):  # TODO: Silly method name?
         '''Helper method so that the color of the border of the window box
         can be changed on the fly.
         '''
-        self.stdscr.del_box(self.window)
-        self.window._color = color          # TODO: Need to add setters and getters?
-        self.stdscr.add_box(self.window)
+        self.border_color = color
+        if self.border_type == LINE_BORDER:
+            self.stdscr.del_box(self.window)
+            self.window._color = color          # TODO: Need to add setters and getters?
+            self.stdscr.add_box(self.window)
+        else:
+            self.draw_solid_border(self.border_color)
 
     def can_write(self, pos, string=' '):
         '''Verify that you can draw the string (usually a single
@@ -90,7 +101,10 @@ class Window(object):
 
         # re-draw borders, if they are wanted
         if self.has_border:
-            self.window.box()
+            if self.border_type == LINE_BORDER:
+                self.window.box()
+            else:
+                self.draw_solid_border(self.border_color)  # TODO: Do I just need to re-write 'draw_solid_border'?
 
     def refresh(self):
         '''Refresh the subwindow, using it's own subwindow method.

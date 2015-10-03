@@ -57,7 +57,7 @@ class TextGameUI(TextUI):
         self.frame_rate = 30
         self.action_keys = ActionKeys()
         self.windows = Windows()
-        self.fresh_displays = Displays()
+        self.displays = Displays()
 
     def init(self):
         pass
@@ -139,20 +139,17 @@ class TextGameUI(TextUI):
         '''Return a list of subwindows'''
         return self.windows.values()
 
-    def create_window(self, kind, rect, border=WHITE):
+    def create_window(self, kind, rect, border_type, border_color):
         '''Helper method to add a subwindow to the screen'''
-        return kind(self, self.stdscr, self.game, rect, border)
+        return kind(self, self.stdscr, self.game, rect, border_type, border_color)
 
     def update_windows(self, display):
         '''Update the display of all windows on the screen
         '''
         self.windows = Windows()
         self.stdscr.clear()
-        for wname, wlst in self.fresh_displays[display].iteritems():
-            if len(wlst) == 2:
-                self.windows[wname] = self.create_window(wlst[0], wlst[1])
-            elif len(wlst) == 3:
-                self.windows[wname] = self.create_window(wlst[0], wlst[1], wlst[2])
+        for wname, wlst in self.displays[display].iteritems():
+            self.windows[wname] = self.create_window(wlst[0], wlst[1], wlst[2], wlst[3])
 
     def display(self):
         '''display every window in this UI'''

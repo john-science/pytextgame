@@ -183,7 +183,6 @@ class Screen(object):
         '''
         # use the default background color
         if bgcolor is None:
-            #bgcolor = self._bgcolor
             bgcolor = color_tuple2int(self._default_bgcolor)  # TODO: This default should come from 'self'
 
         dx = 0
@@ -293,7 +292,7 @@ class Screen(object):
 
 class SubWin(object):
 
-    def __init__(self, stdscr, id, height, width, y, x, color=WHITE, bgcolor=WHITE):
+    def __init__(self, stdscr, id, height, width, y, x, color=WHITE, bgcolor=WHITE):  # TODO: bg color useless here?
         self._stdscr  = stdscr
         self._id      = id
         self._x       = x
